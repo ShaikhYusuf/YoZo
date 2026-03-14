@@ -1,0 +1,54 @@
+/* Centering container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+  background-color: #f4f4f4;
+}
+
+/* Styling for the login card */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: white;
+}
+
+mat-card-title {
+  padding: 10px;
+}
+/* Ensure full width for form fields */
+mat-form-field {
+  width: 100%;
+}
+
+/* Button styling */
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 24px; /* Makes the button rounded */
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 1px solid black;
+}
+
+/* Center button */
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* Error message styling */
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+}

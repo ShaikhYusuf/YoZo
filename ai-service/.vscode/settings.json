@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/YoZo/ai-service/.venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/YoZo/ai-service",
+        "${workspaceFolder}/YoZo/ai-service/.venv/Lib/site-packages"
+    ]
+}

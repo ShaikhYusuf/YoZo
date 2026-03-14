@@ -1,0 +1,62 @@
+<mat-card class="explanation-container">
+  <!-- Explanation Column -->
+  <mat-card class="explanation-card">
+    <mat-card-title style="display: flex; justify-content: space-between; align-items: center;">
+      <span>Explanation</span>
+      <div>
+        <button mat-icon-button color="primary" (click)="readAloud()" *ngIf="!isReading" title="Read Aloud">
+          <mat-icon>volume_up</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="stopReading()" *ngIf="isReading" title="Stop Reading">
+          <mat-icon>stop</mat-icon>
+        </button>
+      </div>
+    </mat-card-title>
+    <mat-card-content class="explanation-content">
+      <mat-card class="sub-card">
+        <div class="scrollable-content" [innerHTML]="explanationText"></div>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Chatbot Column -->
+  <mat-card class="chatbot-card">
+    <mat-card-title>Study Assistant</mat-card-title>
+    <mat-card-content class="chat-container">
+      <div class="messages-container" #messagesContainer>
+        <markdown [data]="responseText"></markdown>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <div class="input-container">
+        <mat-form-field appearance="fill" class="input-question">
+          <input
+            matInput
+            [(ngModel)]="prompt"
+            placeholder="Ask a question..."
+            (keyup.enter)="sendQuestion()"
+            [disabled]="isLoading"
+          />
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="sendQuestion()"
+          [disabled]="!prompt"
+          class="input-send-button"
+        >
+          Send
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="stopResponse()"
+          [disabled]="!prompt"
+          class="input-send-button"
+        >
+          Stop
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</mat-card>

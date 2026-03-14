@@ -1,0 +1,16 @@
+# YoZo AI Service — Python Dependencies
+python-dotenv
+colorama
+tqdm
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-ollama
+psycopg2-binary
+sentence-transformers
+numpy
+flask[async]
+flask-cors
+flask-limiter
+pydantic

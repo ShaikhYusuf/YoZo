@@ -1,0 +1,55 @@
+mat-card {
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+mat-card-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.explanation-container {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  width: 100%;
+  height: 80vh;
+}
+
+.explanation-card {
+  width: 70%;
+  height: 70vh;
+}
+.sub-card {
+  overflow: auto;
+  height: 58vh;
+}
+.chatbot-card {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  height: 70vh;
+}
+
+.messages-container {
+  height: 55vh;
+  overflow: auto;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: row;
+  height: 5vh;
+  width: 100%;
+  align-items: center;
+}
+.input-question {
+  width: 90%;
+}

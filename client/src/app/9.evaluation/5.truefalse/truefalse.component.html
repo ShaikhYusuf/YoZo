@@ -1,0 +1,48 @@
+<mat-card class="quiz-container">
+  <mat-card-title style="display: flex; justify-content: space-between; align-items: center;">
+    <span>True or False</span>
+    <div>
+      <button mat-icon-button color="primary" (click)="readAloud()" *ngIf="!isReading"><mat-icon>volume_up</mat-icon></button>
+      <button mat-icon-button color="warn" (click)="stopReading()" *ngIf="isReading"><mat-icon>stop</mat-icon></button>
+    </div>
+  </mat-card-title>
+  <mat-card-content>
+    <div *ngFor="let eachTrueFalse of trueFalseQuestions" class="quiz-item">
+      <mat-card class="sub-card">
+        <p>{{ eachTrueFalse.question }}</p>
+        <p>{{ eachTrueFalse.answer }}</p>
+        <mat-radio-group [(ngModel)]="eachTrueFalse.selectedAnswer">
+          <mat-radio-button [value]="true">True</mat-radio-button>
+          <mat-radio-button [value]="false">False</mat-radio-button>
+        </mat-radio-group>
+        <mat-icon
+          *ngIf="eachTrueFalse.answered"
+          [ngClass]="{
+            'success-icon':
+              eachTrueFalse.selectedAnswer === eachTrueFalse.answer,
+            'error-icon': eachTrueFalse.selectedAnswer !== eachTrueFalse.answer
+          }"
+        >
+          {{
+            eachTrueFalse.selectedAnswer === eachTrueFalse.answer
+              ? "check_circle"
+              : "cancel"
+          }}
+        </mat-icon>
+      </mat-card>
+    </div>
+    <div class="button-container">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="submitAnswers()"
+        [disabled]="!isAnyAnswerSelected()"
+      >
+        Submit
+      </button>
+      <button mat-raised-button color="primary" (click)="resetTrueFalse()">
+        Reset
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

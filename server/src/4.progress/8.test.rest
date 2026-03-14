@@ -1,0 +1,64 @@
+
+  @baseUrl = http://localhost:3000
+
+  ####
+GET {{baseUrl}}/v1/progress
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+ ####
+  # @name CreateProgress
+
+POST {{baseUrl}}/v1/progress
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "Quiz": 0,
+  "FillBlanks": 0,
+  "TrueFalse": 0,
+  "school": 0,
+  "standard": 0,
+  "student": 0,
+  "subject": 0,
+  "lesson": 0
+}
+
+### Capture Id from Response
+@studentId = {{CreateProgress.response.body.Id}}
+
+####
+GET {{baseUrl}}/v1/progress/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+####
+PUT {{baseUrl}}/v1/progress/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "Quiz": 0,
+  "FillBlanks": 0,
+  "TrueFalse": 0,
+  "school": 0,
+  "standard": 0,
+  "student": 0,
+  "subject": 0,
+  "lesson": 0
+}
+
+####
+DELETE {{baseUrl}}/v1/progress/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token

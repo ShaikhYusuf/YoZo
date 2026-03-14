@@ -1,0 +1,30 @@
+<div class="dashboard-container">
+  <div class="overall-performance">
+    <mat-card class="overall-performance-card">
+      <h2>Overall Performance</h2>
+      <div *ngIf="perfOverall !== undefined" class="overall-bar">
+        <mat-progress-bar mode="determinate" [value]="perfOverall"></mat-progress-bar>
+        <span class="perf-label">{{ perfOverall }}%</span>
+      </div>
+      <div class="chart-wrapper" *ngIf="perfOverallPlotter && perfOverallPlotter.chartConfig">
+        <app-util-chart [config]="perfOverallPlotter.chartConfig"></app-util-chart>
+      </div>
+    </mat-card>
+  </div>
+
+  <mat-card class="dashboard-card">
+    <h2>Progress by Semister</h2>
+    <app-progress-bar
+      [parentList]="perfPerStandard"
+      (onParentClick)="clickByStandard($event)"
+    ></app-progress-bar>
+  </mat-card>
+
+  <mat-card class="dashboard-card">
+    <h2>Progress by Subject</h2>
+    <app-progress-bar
+      [parentList]="perfPerSubject"
+      (onParentClick)="clickBySubject($event)"
+    ></app-progress-bar>
+  </mat-card>
+</div>

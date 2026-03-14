@@ -1,0 +1,149 @@
+import json
+import random
+from typing import Dict, Optional, List
+from pydantic import BaseModel, Field, field_validator
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts import PromptTemplate
+
+#------------------- Match the Column Template ------------------#
+MATCHING_PROMPT_TEMPLATE = """
+You are an expert educator.
+
+Your task is to generate a "Match the Column" exercise STRICTLY following the schema.
+
+VERY IMPORTANT RULES:
+1. Generate EXACTLY 5 matching pairs.
+2. Each pair must contain:
+   - left_item : a key term or concept.
+   - right_item : its correct definition or explanation.
+3. Each pair must represent a DIFFERENT concept from the paragraph.
+4. left_item must be SHORT (1–4 words).
+5. right_item must be a clear explanation (1 short sentence).
+6. Do NOT repeat concepts.
+7. NEVER omit required fields.
+8. Do NOT generate extra fields.
+9. Output ONLY valid JSON.
+10. Do NOT include explanations outside the JSON.
+
+Paragraph:
+{paragraph}
+
+{format_instructions}
+"""
+
+#------------------- Matching Quiz Data Model ------------------#
+class MatchingPair(BaseModel):
+    left_item: str = Field(description="The item in Column A (the term).")
+    right_item: str = Field(description="The matching item in Column B (the definition/description).")
+
+class MatchingMatchColumns(BaseModel):
+    # 'pairs' is used for initial LLM generation
+    pairs: List[MatchingPair] = Field(default=[], description="List of matching pairs.")
+    
+    # 'column_a' and 'column_b' are the source of truth stored in DB
+    column_a: List[str] = Field(default=[], description="Ordered list of left items.")
+    column_b: List[str] = Field(default=[], description="Ordered list of right items.")
+    
+    # These are populated only for the UI/App logic
+    display_a: List[str] = Field(default=[], description="Shuffled list for UI.")
+    display_b: List[str] = Field(default=[], description="Shuffled list for UI.")
+    correct_mapping: Dict[str, str] = Field(default={}, description="Mapping for grading.")
+
+    @field_validator('pairs', mode='before')
+    @classmethod
+    def check_min_pairs(cls, v):
+        if v and len(v) < 5:
+            raise ValueError("You must provide at least 5 matching pairs.")
+        return v
+    
+class MyLessonMatchColumn():
+    table_name = "matching_quizzes_ordered"
+    llm = None
+    conn = None
+
+    @classmethod
+    def initialize(cls, llm, conn):
+        cls.llm = llm
+        cls.conn = conn
+
+    @classmethod
+    async def generate_contents(cls, path, input_content_text) -> MatchingMatchColumns:
+        parser = PydanticOutputParser(pydantic_object=MatchingMatchColumns)
+        prompt = PromptTemplate(
+            template=MATCHING_PROMPT_TEMPLATE,
+            input_variables=["paragraph"],
+            partial_variables={"format_instructions": parser.get_format_instructions()}
+        )
+        query_chain = prompt | cls.llm | parser
+        response = query_chain.invoke({"paragraph": input_content_text})
+        
+        # Populate ordered columns from pairs
+        response.column_a = [p.left_item for p in response.pairs]
+        response.column_b = [p.right_item for p in response.pairs]
+        
+        cls.insert_data_db(
+            path=path,
+            data=response)
+        
+        return response
+
+    @classmethod
+    def insert_data_db(cls, path: str, data: MatchingMatchColumns):
+        create_table_query = f"""
+        CREATE TABLE IF NOT EXISTS {cls.table_name} (
+            id SERIAL PRIMARY KEY,
+            path TEXT UNIQUE,
+            column_a JSONB,
+            column_b JSONB,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+        upsert_query = f"""
+        INSERT INTO {cls.table_name} (path, column_a, column_b)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (path) 
+        DO UPDATE SET 
+            column_a = EXCLUDED.column_a,
+            column_b = EXCLUDED.column_b;
+        """
+        # Store raw lists. JSONB preserves index order.
+        values = (path, json.dumps(data.column_a), json.dumps(data.column_b))
+
+        try:
+            with cls.conn.cursor() as cur:
+                cur.execute(create_table_query)
+                cur.execute(upsert_query, values)
+                cls.conn.commit()
+        except Exception as e:
+            cls.conn.rollback()
+            print(f"Error saving quiz: {e}")
+
+    @classmethod
+    def read_from_db(cls, path: str) -> Optional[MatchingMatchColumns]:
+        query = f"SELECT column_a, column_b FROM {cls.table_name} WHERE path = %s"
+        
+        try:
+            with cls.conn.cursor() as cur:
+                cur.execute(query, (path,))
+                row = cur.fetchone()
+                if not row: return None
+                
+                # Reconstruct object from JSONB columns
+                quiz = MatchingMatchColumns(
+                    column_a=row[0], # type: ignore
+                    column_b=row[1]  # type: ignore
+                )
+                
+                # 1. Create the mapping (Index-based pairing)
+                quiz.correct_mapping = dict(zip(quiz.column_a, quiz.column_b))
+                
+                # 2. Prepare display versions (Shuffled)
+                quiz.display_a = list(quiz.column_a)
+                quiz.display_b = list(quiz.column_b)
+                random.shuffle(quiz.display_a)
+                random.shuffle(quiz.display_b)
+                
+                return quiz
+        except Exception as e:
+            print(f"Error reading quiz: {e}")
+            return None

@@ -1,0 +1,50 @@
+
+  @baseUrl = http://localhost:3000
+
+  ####
+GET {{baseUrl}}/v1/standard
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+ ####
+  # @name CreateStandard
+
+POST {{baseUrl}}/v1/standard
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "5th"
+}
+
+### Capture Id from Response
+@studentId = {{CreateStandard.response.body.Id}}
+
+####
+GET {{baseUrl}}/v1/standard/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+####
+PUT {{baseUrl}}/v1/standard/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "5th"
+}
+
+####
+DELETE {{baseUrl}}/v1/standard/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token

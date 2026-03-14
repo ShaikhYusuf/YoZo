@@ -1,0 +1,62 @@
+[
+  {
+    "Id": 1,
+    "name": "Student #1",
+    "adhaar": "123412341200",
+    "school": "School #1"
+  },
+  {
+    "Id": 2,
+    "name": "Student #2",
+    "adhaar": "123412341201",
+    "school": "School #2"
+  },
+  {
+    "Id": 3,
+    "name": "Student #3",
+    "adhaar": "123412341203",
+    "school": "School #3"
+  },
+  {
+    "Id": 4,
+    "name": "Student #4",
+    "adhaar": "123412341204",
+    "school": "School #4"
+  },
+  {
+    "Id": 5,
+    "name": "Student #5",
+    "adhaar": "123412341205",
+    "school": "School #5"
+  },
+  {
+    "Id": 6,
+    "name": "Student #6",
+    "adhaar": "123412341206",
+    "school": "School #6"
+  },
+  {
+    "Id": 7,
+    "name": "Student #7",
+    "adhaar": "123412341207",
+    "school": "School #7"
+  },
+  {
+    "Id": 8,
+    "name": "Student #8",
+    "adhaar": "123412341208",
+    "school": "School #8"
+  },
+  {
+    "Id": 9,
+    "name": "Student #9",
+    "adhaar": "123412341209",
+    "school": "School #9"
+  },
+  {
+    "Id": 10,
+    "name": "Student #10",
+    "adhaar": "123412341210",
+    "school": "School #10"
+  }
+]

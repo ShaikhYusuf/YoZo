@@ -1,0 +1,52 @@
+
+  @baseUrl = http://localhost:3000
+
+  ####
+GET {{baseUrl}}/v1/school
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+ ####
+  # @name CreateSchool
+
+POST {{baseUrl}}/v1/school
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "Anjuman Khairul Islam",
+  "address": "Agripada, Mumbai"
+}
+
+### Capture Id from Response
+@studentId = {{CreateSchool.response.body.Id}}
+
+####
+GET {{baseUrl}}/v1/school/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+####
+PUT {{baseUrl}}/v1/school/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "Anjuman Khairul Islam",
+  "address": "Agripada, Mumbai"
+}
+
+####
+DELETE {{baseUrl}}/v1/school/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token

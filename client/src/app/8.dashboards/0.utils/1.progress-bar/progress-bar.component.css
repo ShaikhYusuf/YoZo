@@ -1,0 +1,35 @@
+.progress-bar-child,
+.progress-bar-grandchild {
+  display: flex;
+  align-items: center;
+  width: 80%;
+}
+
+.progress-bar-child {
+  padding-left: 30px; /* Indent child level */
+}
+
+.progress-bar-grandchild {
+  padding-left: 60px; /* Further indent grandchild level */
+}
+
+/* Ensures button content is aligned properly */
+.progress-bar-child button,
+.progress-bar-grandchild button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.mat-progress-bar-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.mat-progress-bar-progress-bar {
+  flex-grow: 1;
+  min-width: 200px; /* Prevents shrinking too much */
+}

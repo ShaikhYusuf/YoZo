@@ -1,0 +1,18 @@
+PORT=3000
+HEALTH_PORT=3001
+CORSURL=['http://localhost:3000', 'http://localhost:4200']
+TENANT_1_ID=tenanta
+TENANT_1_AUTH_SERVER=localhost:3333
+TENANT_1_CLIENT_ID=TenantA_ClientId
+TENANT_1_CLIENT_SECRET=TenantA_ClientSecret
+TENANT_1_DB_URI=postgres://127.0.0.1:5432/yozo
+TENANT_1_DB_USERNAME=postgres
+TENANT_1_DB_PASSWORD=postgres
+TENANT_1_DB_DIALECT=postgres
+
+# AI Service Configuration
+AI_SERVICE_URL=http://localhost:5000
+
+# JWT Configuration
+JWT_SECRET=change-this-secret-key-in-production
+JWT_EXPIRY_HOURS=24

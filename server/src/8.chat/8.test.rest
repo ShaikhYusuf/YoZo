@@ -1,0 +1,52 @@
+
+  @baseUrl = http://localhost:3000
+
+  ####
+GET {{baseUrl}}/v1/subject
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+ ####
+  # @name CreateSubject
+
+POST {{baseUrl}}/v1/subject
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "English",
+  "standard": 0
+}
+
+### Capture Id from Response
+@studentId = {{CreateSubject.response.body.Id}}
+
+####
+GET {{baseUrl}}/v1/subject/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+####
+PUT {{baseUrl}}/v1/subject/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "English",
+  "standard": 0
+}
+
+####
+DELETE {{baseUrl}}/v1/subject/{{studentId}}
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token

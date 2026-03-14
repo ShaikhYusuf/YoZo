@@ -1,0 +1,51 @@
+{
+  "name": "yozo-server",
+  "version": "1.0.0",
+  "description": "YoZo Learning Platform — Unified Backend Server",
+  "main": "index.js",
+  "scripts": {
+    "clean-build": "rimraf ./dist && tsc",
+    "copy-files": "npx copyfiles ./.env .package.json ./dist/",
+    "build": "npm run clean-build && npx tsc && npm run copy-files",
+    "start": "node --trace-warnings ./dist/index.js"
+  },
+  "keywords": ["education", "learning", "yozo"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@godaddy/terminus": "^4.12.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/inversify": "^2.0.33",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.9.3",
+    "@types/sequelize": "^4.28.20",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "http": "^0.0.1-security",
+    "inversify": "^6.1.4",
+    "inversify-express-utils": "^6.4.7",
+    "jsonwebtoken": "^9.0.2",
+    "moments": "^0.0.2",
+    "morgan": "^1.10.0",
+    "path": "^0.12.7",
+    "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
+    "sequelize": "^6.37.5",
+    "typescript-ioc": "^3.0.5",
+    "typescript-rest": "^1.7.0",
+    "winston": "^3.17.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2"
+  }
+}

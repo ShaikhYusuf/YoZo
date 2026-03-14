@@ -1,0 +1,21 @@
+mat-card {
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 1500px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+mat-card-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+mat-progress-bar {
+  margin-bottom: 16px;
+}

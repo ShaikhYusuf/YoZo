@@ -1,0 +1,48 @@
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+.overall-performance {
+  display: flex;
+  width: 100%;
+}
+.overall-performance-card {
+  width: 70%;
+}
+.subject-performance-card {
+  width: 30%;
+}
+.overall-subject {
+  display: flex;
+  width: 100%;
+}
+
+.dashboard-card {
+  flex: 1 1 calc(20.333% - 20px); /* Example of a 3-column layout for other cards */
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+}
+
+.mat-elevation-z8 {
+  border-radius: 8px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  background: #f4f4f4;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
