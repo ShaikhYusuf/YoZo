@@ -14,21 +14,24 @@ import logging
 import os
 import sys
 
-from dotenv import load_dotenv
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-import numpy as np
-from langchain_ollama import OllamaLLM
+from dotenv import load_dotenv  # type: ignore
+from flask import Flask, jsonify, request  # type: ignore
+from flask_cors import CORS  # type: ignore
+from flask_limiter import Limiter  # type: ignore
+from flask_limiter.util import get_remote_address  # type: ignore
+import numpy as np  # type: ignore
+from langchain_ollama import OllamaLLM  # type: ignore
 
-from lib.data_ingestor import DataIngestor
-from lib.utility import Utility
-from lib.lesson_store import MyLessonStore
-from lib.lesson_content import MyLessonContent
-from lib.lesson_quiz import MyLessonQuiz
-from lib.lesson_short_question import MyLessonShortQuestion
-from lib.lesson_truefalse import MyLessonTrueFalse
+from lib.data_ingestor import DataIngestor  # type: ignore
+from lib.utility import Utility  # type: ignore
+from lib.lesson_store import MyLessonStore  # type: ignore
+from lib.lesson_content import MyLessonContent  # type: ignore
+from lib.lesson_quiz import MyLessonQuiz  # type: ignore
+from lib.lesson_short_question import MyLessonShortQuestion  # type: ignore
+from lib.lesson_truefalse import MyLessonTrueFalse  # type: ignore
+from lib.task_store import task_store, TaskStatus  # type: ignore
+
+import asyncio
 
 # ------------------------------------------------
 # Configuration
@@ -105,7 +108,7 @@ def cleanup():
         logger.info("Cleanup complete.")
 
 
-atexit.register(cleanup)
+atexit.register(cleanup)  # type: ignore
 
 
 def initialize_app():
@@ -138,58 +141,71 @@ def initialize_app():
 
 
 # ================================================
-# AI Content Routes
+# AI Content Routes (Task-Based Async)
 # ================================================
-@app.route('/api/ai/content', methods=['GET'])
-async def get_lesson_content():
-    try:
-        path = request.args.get('path')
-        lesson_content = await MyLessonContent.generate_response(path)
-        if lesson_content:
-            return success_response(lesson_content.model_dump(), "Lesson content fetched successfully")
-        return error_response("Content not found", 404)
-    except Exception as e:
-        logger.exception("Error fetching lesson content")
-        return error_response(str(e))
 
+def run_sync_in_thread(coro):
+    """Bridge to run an async coroutine inside a synchronous background thread."""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
+
+@app.route('/api/ai/content', methods=['GET'])
+def get_lesson_content():
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+    
+    task_id = task_store.create_task()
+    # We pass the coroutine call to the thread
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonContent.generate_response(path))
+    return success_response({"task_id": task_id}, "Task started", 202)
 
 @app.route('/api/ai/quiz', methods=['GET'])
-async def get_lesson_quiz():
-    try:
-        path = request.args.get('path')
-        lesson_quiz_set = await MyLessonQuiz.generate_response(path)
-        if lesson_quiz_set:
-            return success_response(lesson_quiz_set.model_dump(), "Quiz fetched successfully")
-        return error_response("Content not found", 404)
-    except Exception as e:
-        logger.exception("Error fetching quiz")
-        return error_response(str(e))
-
+def get_lesson_quiz():
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+    
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonQuiz.generate_response(path))
+    return success_response({"task_id": task_id}, "Task started", 202)
 
 @app.route('/api/ai/truefalse', methods=['GET'])
-async def get_lesson_true_false():
-    try:
-        path = request.args.get('path')
-        lesson_true_false_set = await MyLessonTrueFalse.generate_response(path)
-        if lesson_true_false_set:
-            return success_response(lesson_true_false_set.model_dump(), "True/False fetched successfully")
-        return error_response("Content not found", 404)
-    except Exception as e:
-        logger.exception("Error fetching true/false")
-        return error_response(str(e))
-
+def get_lesson_true_false():
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+    
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonTrueFalse.generate_response(path))
+    return success_response({"task_id": task_id}, "Task started", 202)
 
 @app.route('/api/ai/shortquestions', methods=['GET'])
-async def get_lesson_short_questions():
-    try:
-        path = request.args.get('path')
-        lesson_short_questions_set = await MyLessonShortQuestion.generate_response(path)
-        if lesson_short_questions_set:
-            return success_response(lesson_short_questions_set.model_dump(), "Short questions fetched successfully")
-        return error_response("Content not found", 404)
-    except Exception as e:
-        logger.exception("Error fetching short questions")
-        return error_response(str(e))
+def get_lesson_short_questions():
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+    
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonShortQuestion.generate_response(path))
+    return success_response({"task_id": task_id}, "Task started", 202)
+
+@app.route('/api/ai/tasks/<task_id>', methods=['GET'])
+def get_task_status(task_id):
+    task = task_store.get_task(task_id)
+    if not task:
+        return error_response("Task not found", 404)
+    
+    # Process Pydantic models in result if they exist
+    result = task.get("result")
+    if result and hasattr(result, "model_dump"):
+        task["result"] = result.model_dump()
+        
+    return success_response(task, "Task status fetched")
 
 
 @app.route("/api/ai/compare", methods=["POST"])
@@ -211,14 +227,18 @@ def compare_text_to_embedding():
 # ================================================
 # Lesson Hierarchy & Scores Routes
 # ================================================
+hierarchy_cache = {}
+
 @app.route('/api/ai/hierarchy', methods=['GET'])
 def get_lesson_hierarchy():
     try:
+        if "data" in hierarchy_cache:
+            return success_response(hierarchy_cache["data"], "Lesson hierarchy fetched from cache")
+
         hierarchy = MyLessonStore.read_hierarchy_with_scores()
-        return success_response(
-            [h.model_dump() for h in hierarchy],
-            "Lesson hierarchy fetched successfully"
-        )
+        data = [h.model_dump() for h in hierarchy]
+        hierarchy_cache["data"] = data
+        return success_response(data, "Lesson hierarchy fetched successfully")
     except Exception as e:
         logger.exception("Error fetching lesson hierarchy")
         return error_response(str(e))
@@ -247,10 +267,14 @@ def update_scores():
             MyLessonStore.update_shortquestion_score(path, data['short_question_score'])
             results['short_question_score'] = 'updated'
 
+        # Invalidate cache when scores update
+        hierarchy_cache.clear()
+
         return success_response({"updated": results}, "Scores updated successfully")
     except Exception as e:
         logger.exception("Error updating scores")
         return error_response(str(e))
+
 
 
 @app.route('/api/ai/scores/all', methods=['GET'])

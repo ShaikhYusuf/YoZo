@@ -1,0 +1,58 @@
+<div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden explanation-container">
+  <!-- Explanation Column -->
+  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden explanation-card">
+    <div class="px-6 py-4 border-b border-surface-border">
+      <span>Explanation</span>
+      <div>
+        <button (click)="readAloud()" *ngIf="!isReading" title="Read Aloud">
+          <i class="fa-solid fa-volume_up"></i>
+        </button>
+        <button (click)="stopReading()" *ngIf="isReading" title="Stop Reading">
+          <i class="fa-solid fa-stop"></i>
+        </button>
+      </div>
+    </div>
+    <div class="p-6">
+      <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden sub-card">
+        <div class="scrollable-content" [innerHTML]="explanationText"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot Column -->
+  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden chatbot-card">
+    <div class="px-6 py-4 border-b border-surface-border">Study Assistant</div>
+    <div class="p-6">
+      <div class="messages-container" #messagesContainer>
+        <markdown [data]="responseText"></markdown>
+      </div>
+    </div>
+    <div class="px-6 py-4 flex items-center gap-3 border-t border-surface-border">
+      <div class="input-container">
+        <div class="flex flex-col" class="input-question">
+          <input class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" [(ngModel)]="prompt"
+            placeholder="Ask a question..."
+            (keyup.enter)="sendQuestion()"
+            [disabled]="isLoading"
+           />
+        </div>
+        <button
+          class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          (click)="sendQuestion()"
+          [disabled]="!prompt"
+          class="input-send-button"
+        >
+          Send
+        </button>
+        <button
+          class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          (click)="stopResponse()"
+          [disabled]="!prompt"
+          class="input-send-button"
+        >
+          Stop
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

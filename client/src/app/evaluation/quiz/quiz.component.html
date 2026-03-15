@@ -1,0 +1,36 @@
+<!-- Quiz Component -->
+<div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+  <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
+    <span class="text-lg font-semibold text-foreground tracking-tight">Quiz</span>
+    <div class="flex gap-2">
+      <button (click)="readAloud()" *ngIf="!isReading" class="text-primary hover:text-primary-hover p-1.5 rounded-md hover:bg-primary-light transition-colors"><i class="fa-solid fa-volume-high"></i></button>
+      <button (click)="stopReading()" *ngIf="isReading" class="text-red-500 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors"><i class="fa-solid fa-stop"></i></button>
+    </div>
+  </div>
+  <div class="p-6 space-y-6">
+    <div *ngFor="let eachQuiz of quizzes" class="p-4 bg-surface border border-surface-border rounded-lg">
+      <p class="font-medium text-foreground mb-3">{{ eachQuiz.question }}</p>
+      <div class="space-y-2">
+        <label *ngFor="let option of eachQuiz.options; let i = index" 
+          class="flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all duration-200"
+          [ngClass]="{
+            'border-primary bg-primary-light': eachQuiz.selectedAnswer === i && !eachQuiz.answered,
+            'border-green-400 bg-green-50': eachQuiz.answered && i === eachQuiz.answer,
+            'border-red-400 bg-red-50': eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer,
+            'border-surface-border hover:border-primary/50': eachQuiz.selectedAnswer !== i && !eachQuiz.answered
+          }">
+          <input type="radio" [name]="'quiz-' + eachQuiz.question" [value]="i" [(ngModel)]="eachQuiz.selectedAnswer" class="accent-primary" />
+          <span [ngClass]="{'text-green-700': eachQuiz.answered && i === eachQuiz.answer, 'text-red-700': eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer}">
+            {{ option }}
+          </span>
+          <i *ngIf="eachQuiz.answered && i === eachQuiz.answer" class="fa-solid fa-circle-check text-green-500 ml-auto"></i>
+          <i *ngIf="eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer" class="fa-solid fa-circle-xmark text-red-500 ml-auto"></i>
+        </label>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" (click)="submitAnswers()" [disabled]="!isAnyQuizAttempted()">Submit</button>
+      <button class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover active:scale-95" (click)="resetQuiz()">Reset</button>
+    </div>
+  </div>
+</div>

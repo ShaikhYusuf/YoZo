@@ -1,0 +1,56 @@
+﻿
+> yozo-client@1.0.0 build
+> ng build
+
+[33mΓ¥»[39m Building...
+[32mΓ£ö[39m Building...
+[1mInitial chunk files[22m  [2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mmain-DBTIYDRY.js[39m     [2m | [22m[2mmain[22m         [2m | [22m[36m945.83 kB[39m[2m | [22m              [36m230.53 kB[39m
+[32mpolyfills-B6TNHZQ6.js[39m[2m | [22m[2mpolyfills[22m    [2m | [22m [36m34.58 kB[39m[2m | [22m               [36m11.32 kB[39m
+[32mstyles-JOP7447B.css[39m  [2m | [22m[2mstyles[22m       [2m | [22m [36m31.08 kB[39m[2m | [22m                [36m4.44 kB[39m
+
+[1m [22m                    [2m | [22m[1mInitial total[22m[2m | [22m  [1m1.01 MB[22m[2m | [22m              [1m246.28 kB[22m
+
+Application bundle generation complete. [10.459 seconds]
+
+node.exe : 
+[1m[33m[33mΓû▓ [43;
+33m[[43;30mWARNING[43
+;33m][0m [1mModule 
+'deepmerge' used by 'no
+de_modules/html-to-text
+/lib/html-to-text.mjs' 
+is not ESM[0m
+At C:\nvm4w\nodejs\npm.
+ps1:16 char:5
++     & 
+"$basedir/node$exe"  "$
+basedir/node_modules/np
+m/bin/npm-cli.js" ...
++     ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: ([1m[33m[33   
+ mΓ... is not ESM[    
+0m:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+  CommonJS or AMD 
+dependencies can cause 
+optimization bailouts.
+  For more information 
+see: [4mhttps://angula
+r.dev/tools/cli/build#c
+onfiguring-commonjs-dep
+endencies[0m
+
+[39m[22m
+Output location: D:\Yusuf-Clg\YoZo\client\dist\testclient
+

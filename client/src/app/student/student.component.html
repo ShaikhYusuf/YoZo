@@ -1,0 +1,61 @@
+<!-- Student Management Page -->
+<div class="max-w-5xl mx-auto p-6 space-y-6">
+  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-foreground tracking-tight">Student Details</h2>
+      <button (click)="toggleForm()" class="inline-flex items-center gap-2 bg-primary text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95">
+        <i class="fa-solid" [ngClass]="isFormVisible ? 'fa-pen' : 'fa-plus'"></i>
+        {{ isFormVisible ? 'Edit' : 'Add Student' }}
+      </button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="text-xs text-muted uppercase bg-surface-hover/50 border-b border-surface-border">
+          <tr>
+            <th class="px-6 py-3 font-medium">Name</th>
+            <th class="px-6 py-3 font-medium">Adhaar</th>
+            <th class="px-6 py-3 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let element of dataSource" class="border-b border-surface-border hover:bg-surface-hover/50 transition-colors duration-150">
+            <td class="px-6 py-4 text-foreground font-medium">{{ element.name }}</td>
+            <td class="px-6 py-4 text-muted">{{ element.adhaar }}</td>
+            <td class="px-6 py-4 text-right space-x-1">
+              <button (click)="editStudent(element)" title="Edit" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button (click)="deleteStudent(element.Id!)" title="Delete" class="text-red-500 hover:text-red-600 transition-colors p-1.5 rounded-md hover:bg-red-50"><i class="fa-solid fa-trash"></i></button>
+              <button (click)="onProgresss(element.Id!)" title="View Progress" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light"><i class="fa-solid fa-chart-line"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (isFormVisible) {
+    <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden animate-slide-down">
+      <div class="px-6 py-4 border-b border-surface-border flex items-center gap-2">
+        <i class="fa-solid text-primary" [ngClass]="isEditMode ? 'fa-pen' : 'fa-plus'"></i>
+        <h3 class="text-lg font-semibold text-foreground tracking-tight">{{ isEditMode ? 'Update Student' : 'Add Student' }}</h3>
+      </div>
+      <div class="p-6">
+        <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="flex flex-col">
+            <label class="mb-1.5 text-sm font-medium text-foreground">Name</label>
+            <input formControlName="name" placeholder="Student Name" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('name')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1.5 text-sm font-medium text-foreground">Adhaar / ID</label>
+            <input formControlName="adhaar" placeholder="Student ID" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('adhaar')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+          </div>
+          <div class="col-span-full flex items-center gap-3 pt-2">
+            <button type="submit" [disabled]="studentForm.invalid" class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">{{ isEditMode ? 'Update' : 'Add Student' }}</button>
+            <button type="button" (click)="toggleForm()" class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover active:scale-95">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

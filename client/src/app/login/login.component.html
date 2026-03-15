@@ -1,0 +1,60 @@
+<!-- Full-screen centered login -->
+<div class="min-h-screen flex items-center justify-center bg-background px-4">
+  
+  <!-- Glassmorphic Login Card -->
+  <div class="w-full max-w-md bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-2xl p-8 animate-fade-in">
+    
+    <!-- Logo / Brand -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-foreground tracking-tight">YoZo</h1>
+      <p class="text-muted text-sm mt-2">Sign in to your learning platform</p>
+    </div>
+
+    <!-- Login Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+      
+      <!-- Username Field -->
+      <div class="flex flex-col">
+        <label class="mb-1.5 text-sm font-medium text-foreground">Username</label>
+        <input 
+          type="text" 
+          formControlName="username"
+          placeholder="Enter your username"
+          class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted"
+        />
+      </div>
+
+      <!-- Password Field -->
+      <div class="flex flex-col">
+        <label class="mb-1.5 text-sm font-medium text-foreground">Password</label>
+        <input 
+          type="password" 
+          formControlName="password"
+          placeholder="Enter your password"
+          class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted"
+        />
+      </div>
+
+      <!-- Error Message -->
+      @if (errorMessage) {
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-lg">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <button 
+        type="submit"
+        [disabled]="loginForm.invalid"
+        class="w-full bg-primary text-white font-semibold px-4 py-3 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Sign In
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <p class="text-center text-muted text-xs mt-6">
+      Powered by YoZo Learning Platform
+    </p>
+  </div>
+</div>

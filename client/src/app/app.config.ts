@@ -6,20 +6,21 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MarkdownModule } from 'ngx-markdown';
+import { loadingInterceptor } from './common/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: BrowserModule }, // Add BrowserModule here
+    { provide: BrowserModule },
     BrowserAnimationsModule,
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideAnimations(),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([loadingInterceptor])),
     importProvidersFrom(MarkdownModule.forRoot()),
   ],
 };

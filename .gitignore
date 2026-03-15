@@ -1,0 +1,49 @@
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependency directories
+node_modules/
+jspm_packages/
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular specific
+.angular/
+
+# AI service specific
+ai-service/error.txt
+
+# Database specific
+*.sqlite

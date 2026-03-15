@@ -1,0 +1,44 @@
+<!-- Evaluation Component -->
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-surface-border">
+      <h2 class="text-xl font-semibold text-foreground tracking-tight">Evaluation</h2>
+    </div>
+    <div class="p-6 space-y-6">
+      <!-- Custom Progress Bar -->
+      <div class="w-full bg-surface-border rounded-full h-2.5 overflow-hidden">
+        <div class="h-full bg-primary rounded-full transition-all duration-500 ease-out" [style.width.%]="progress"></div>
+      </div>
+
+      <ng-container *ngIf="currentStep === 0">
+        <app-explanation [lessonId]="lessonId" [lessonsectionId]="lessonsectionId"></app-explanation>
+      </ng-container>
+
+      <ng-container *ngIf="currentStep === 1">
+        <app-quiz [lessonId]="lessonId" [lessonsectionId]="lessonsectionId" (score)="updateScore('Quiz', $event)"></app-quiz>
+      </ng-container>
+
+      <ng-container *ngIf="currentStep === 2">
+        <app-truefalse [lessonId]="lessonId" [lessonsectionId]="lessonsectionId" (score)="updateScore('TrueFalse', $event)"></app-truefalse>
+      </ng-container>
+
+      <ng-container *ngIf="currentStep === 3">
+        <app-fillblank [lessonId]="lessonId" [lessonsectionId]="lessonsectionId" (score)="updateScore('FillBlank', $event)"></app-fillblank>
+      </ng-container>
+    </div>
+
+    <div class="px-6 py-4 flex items-center gap-3 border-t border-surface-border">
+      <button
+        (click)="nextStep()"
+        [disabled]="
+          (currentStep === 1 && quizScore < 90) ||
+          (currentStep === 2 && trueFalseScore < 90) ||
+          (currentStep === 3 && fillBlankScore < 90)
+        "
+        class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {{ progress == 100 ? "Submit" : "Next" }}
+      </button>
+    </div>
+  </div>
+</div>

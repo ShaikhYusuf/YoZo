@@ -45,6 +45,7 @@ const TYPES = {
   ControllerGamification: Symbol("ControllerGamification"),
   ServiceGamification: Symbol("ServiceGamification"),
   RepoGamification: Symbol("RepoGamification"),
+  SocketService: Symbol("SocketService"),
 };
 
 export default TYPES;

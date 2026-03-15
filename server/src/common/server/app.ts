@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import path from "path";
 import dotenv from "dotenv";
 
@@ -30,6 +31,7 @@ export class App {
     });
 
     server.setConfig((app: Application) => {
+      app.use(compression());
       app.use(express.json({ limit: serverConfig.limit }));
       app.use(express.urlencoded({ extended: true }));
       app.use(express.static(path.join(__dirname, serverConfig.CLIENT_PATH)));

@@ -1,55 +1,57 @@
 import { Routes } from '@angular/router';
-import { LoginDetailComponent } from './0.logindetail/logindetail.component';
-import { SchoolComponent } from './1.school/school.component';
-import { SchoolStandardComponent } from './2.schoolstandard/schoolstandard.component';
-import { StudentComponent } from './3.student/student.component';
-import { ProgressComponent } from './4.progress/progress.component';
-import { StandardComponent } from './5.standard/standard.component';
-import { SubjectComponent } from './6.subject/subject.component';
-import { LessonComponent } from './7.lesson/lesson.component';
-import { StudentDashboardComponent } from './8.dashboards/3.student-dashboard/student-dashboard.component';
-import { StandardDashboardComponent } from './8.dashboards/2.standard-dashboard/standard-dashboard.component';
-import { SchoolDashboardComponent } from './8.dashboards/1.school-dashboard/school-dashboard.component';
-import { LoginComponent } from './0.login/login.component';
-import { QuizComponent } from './9.evaluation/3.quiz/quiz.component';
-import { FillBlankComponent } from './9.evaluation/4.fillblank/fillblank.component';
-import { TrueFalseComponent } from './9.evaluation/5.truefalse/truefalse.component';
-import { EvaluationComponent } from './9.evaluation/1.evaluation/evaluation.component';
-import { LessonSectionComponent } from './7.lessonsection/lessonsection.component';
-import { VoiceSelectionComponent } from './10.voice/voice-selection.component';
-import { ProfileComponent } from './12.profile/profile.component';
 
 export const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'login-details', component: LoginDetailComponent },
+  { 
+    path: '', 
+    loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) 
+  },
+  { 
+    path: 'login-details', 
+    loadComponent: () => import('./login-detail/logindetail.component').then(m => m.LoginDetailComponent) 
+  },
 
   //====================================| Principal/Teachers routes
   { path: 'principal', redirectTo: 'school-dashboard', pathMatch: 'full' },
   { path: 'teacher', redirectTo: 'school-dashboard', pathMatch: 'full' },
 
-  { path: 'school-dashboard', component: SchoolDashboardComponent },
+  { 
+    path: 'school-dashboard', 
+    loadComponent: () => import('./dashboards/school-dashboard/school-dashboard.component').then(m => m.SchoolDashboardComponent) 
+  },
   {
     path: 'standard-dashboard/school/:schoolId/standard/:standardId',
-    component: StandardDashboardComponent,
+    loadComponent: () => import('./dashboards/standard-dashboard/standard-dashboard.component').then(m => m.StandardDashboardComponent),
   },
 
   //====================================| Admin routes
   { path: 'admin', redirectTo: 'school', pathMatch: 'full' },
-  { path: 'school', component: SchoolComponent },
+  { 
+    path: 'school', 
+    loadComponent: () => import('./school/school.component').then(m => m.SchoolComponent) 
+  },
   {
     path: 'schoolstandard/school/:schoolId',
-    component: SchoolStandardComponent,
+    loadComponent: () => import('./school-standard/schoolstandard.component').then(m => m.SchoolStandardComponent),
   },
-  { path: 'standard', component: StandardComponent },
+  { 
+    path: 'standard', 
+    loadComponent: () => import('./standard/standard.component').then(m => m.StandardComponent) 
+  },
   {
     path: 'student/school/:schoolId/standard/:standardId',
-    component: StudentComponent,
+    loadComponent: () => import('./student/student.component').then(m => m.StudentComponent),
   },
-  { path: 'subject/standard/:standardId', component: SubjectComponent },
-  { path: 'lesson/subject/:subjectId', component: LessonComponent },
+  { 
+    path: 'subject/standard/:standardId', 
+    loadComponent: () => import('./subject/subject.component').then(m => m.SubjectComponent) 
+  },
+  { 
+    path: 'lesson/subject/:subjectId', 
+    loadComponent: () => import('./lesson/lesson.component').then(m => m.LessonComponent) 
+  },
   {
     path: 'lessonsection/subject/:subjectId/lesson/:lessonId',
-    component: LessonSectionComponent,
+    loadComponent: () => import('./lesson-section/lessonsection.component').then(m => m.LessonSectionComponent),
   },
 
   //====================================| Students routes
@@ -60,21 +62,27 @@ export const routes: Routes = [
   },
   {
     path: 'student-dashboard/school/:schoolId/standard/:standardId/student/:studentId',
-    component: StudentDashboardComponent,
+    loadComponent: () => import('./dashboards/student-dashboard/student-dashboard.component').then(m => m.StudentDashboardComponent),
   },
   {
     path: 'evaluation/school/:schoolId/standard/:standardId/student/:studentId/subject/:subjectId/lesson/:lessonId/lessonsection/:lessonsectionId',
-    component: EvaluationComponent,
+    loadComponent: () => import('./evaluation/evaluation/evaluation.component').then(m => m.EvaluationComponent),
   },
   {
     path: 'progress/school/:schoolId/standard/:standardId/student/:studentId',
-    component: ProgressComponent,
+    loadComponent: () => import('./progress/progress.component').then(m => m.ProgressComponent),
   },
 
   //====================================| Voice & AI routes (from Dip-Project)
-  { path: 'voice-settings', component: VoiceSelectionComponent },
+  { 
+    path: 'voice-settings', 
+    loadComponent: () => import('./voice/voice-selection.component').then(m => m.VoiceSelectionComponent) 
+  },
 
   //====================================| Generic User Routes
-  { path: 'profile', component: ProfileComponent },
+  { 
+    path: 'profile', 
+    loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent) 
+  },
 ];
 
