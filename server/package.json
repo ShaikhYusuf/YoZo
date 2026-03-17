@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean-build": "rimraf ./dist && tsc",
-    "copy-files": "npx copyfiles ./.env .package.json ./dist/",
+    "copy-files": "npx copyfiles ./.env package.json ./dist/",
     "build": "npm run clean-build && npx tsc && npm run copy-files",
     "start": "node --trace-warnings ./dist/index.js"
   },
