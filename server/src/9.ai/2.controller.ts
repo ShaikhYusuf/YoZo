@@ -11,6 +11,7 @@ import {
 import { ILogger } from "../common/service/logger.service";
 import TYPES from "../ioc/types";
 import { container } from "../ioc/container";
+import { SocketService } from "../common/service/socket.service";
 
 import { BaseController } from "../common/base-controller";
 import { HttpStatusCode } from "../common/constant/http-status-code";
@@ -23,10 +24,12 @@ const AI_SERVICE_URL = getEnvVariable("AI_SERVICE_URL", "http://localhost:5000")
 @controller("/ai")
 export class ControllerAi extends BaseController {
   private logger: ILogger;
+  private socketService: SocketService;
 
   constructor() {
     super();
     this.logger = container.get(TYPES.LoggerService);
+    this.socketService = container.get(SocketService);
   }
 
   private setCommonHeaders(res: Response) {
@@ -53,6 +56,12 @@ export class ControllerAi extends BaseController {
       });
 
       const data = await response.json();
+      
+      // If the AI service returned a task_id (Status 202 Accepted), start polling in background
+      if (response.status === 202 && data.data && data.data.task_id) {
+        this.startPoller(data.data.task_id, targetPath);
+      }
+
       this.setCommonHeaders(res);
       res.status(response.status).json(data);
     } catch (error: any) {
@@ -60,6 +69,54 @@ export class ControllerAi extends BaseController {
       this.setCommonHeaders(res);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to connect to AI Service." });
     }
+  }
+
+  private startPoller(taskId: string, originalPath: string) {
+    this.logger.info(`Starting background poller for task: ${taskId}`);
+    
+    const poll = async () => {
+      try {
+        const url = `${AI_SERVICE_URL}/api/ai/tasks/${taskId}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === "success") {
+          const task = data.data;
+          if (task.status === "completed") {
+            this.logger.info(`Task ${taskId} completed successfully.`);
+            this.socketService.emit("ai_task_update", {
+              taskId,
+              status: "completed",
+              path: originalPath,
+              result: task.result
+            });
+            return; // Stop polling
+          } else if (task.status === "failed") {
+            this.logger.error(`Task ${taskId} failed: ${task.error}`);
+            this.socketService.emit("ai_task_update", {
+              taskId,
+              status: "failed",
+              path: originalPath,
+              error: task.error
+            });
+            return; // Stop polling
+          }
+        }
+        
+        // If still pending/running, poll again in 2 seconds
+        setTimeout(poll, 2000);
+      } catch (error: any) {
+        this.logger.error(`Polling error for task ${taskId}: ${error.message}`);
+        this.socketService.emit("ai_task_update", {
+          taskId,
+          status: "failed",
+          path: originalPath,
+          error: "Lost connection to AI Service during generation."
+        });
+      }
+    };
+
+    poll();
   }
 
   @httpGet("/content", aiLimiter, requireAuth)

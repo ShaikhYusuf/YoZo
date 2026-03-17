@@ -1,0 +1,17 @@
+/* Login page — all styling now handled by Tailwind utilities in the template.
+   This file only contains custom animations. */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}

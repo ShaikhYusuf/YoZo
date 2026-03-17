@@ -6,6 +6,7 @@ import { ILogger, LoggerService } from "../common/service/logger.service";
 import { ServiceTenant } from "../common/service/tenant.service";
 import { RequestContextProvider } from "../common/service/request-context.service";
 import { MiddlewareProvider } from "../common/service/middleware.service";
+import { SocketService } from "../common/service/socket.service";
 import { Validate } from "../common/validate";
 
 import { ControllerLoginDetail } from "../0.logindetail/2.controller";
@@ -147,5 +148,6 @@ container.bind<ControllerAi>(TYPES.ControllerAi).to(ControllerAi);
 container.bind<ControllerGamification>(TYPES.ControllerGamification).to(ControllerGamification);
 container.bind<IServiceGamification>(TYPES.ServiceGamification).to(ServiceGamificationImpl);
 container.bind<IRepoGamification>(TYPES.RepoGamification).to(RepoGamificationImpl);
+container.bind(SocketService).toSelf().inSingletonScope();
 
 export { container };

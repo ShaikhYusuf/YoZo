@@ -1,0 +1,164 @@
+<div class="max-w-5xl mx-auto p-4 sm:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+  
+  <header class="flex flex-col gap-2">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-glow-sm">
+        <i class="fa-solid fa-microphone-lines text-primary text-xl"></i>
+      </div>
+      <h1 class="text-3xl font-extrabold text-foreground tracking-tight">Voice & Speech</h1>
+    </div>
+    <p class="text-muted text-lg max-w-2xl">Customize how the AI narrator sounds during your learning journey.</p>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Settings Column -->
+    <div class="lg:col-span-2 space-y-8">
+      
+      <!-- Voice Selection Section -->
+      <section class="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-glass space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-foreground">Narrator Voice</h2>
+            <p class="text-sm text-muted">Select the personality for your AI guide.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @for (voice of voices; track voice.name) {
+            <button 
+              (click)="selectVoice(voice)"
+              class="group relative flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 text-left overflow-hidden"
+              [class]="selectedVoice?.name === voice.name 
+                ? 'bg-primary/10 border-primary shadow-glow-sm' 
+                : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'">
+              
+              <div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-border group-hover:scale-110 transition-transform duration-300">
+                <i class="fa-solid fa-headset text-muted group-hover:text-primary" [class.text-primary]="selectedVoice?.name === voice.name"></i>
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-foreground truncate">{{ voice.name }}</p>
+                <p class="text-xs text-muted truncate">{{ voice.lang }}</p>
+              </div>
+
+              @if (selectedVoice?.name === voice.name) {
+                <div class="absolute top-3 right-3 text-primary animate-in zoom-in duration-300">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+              }
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Speed & Rate Section -->
+      <section class="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-glass space-y-6">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-foreground">Speech Pace</h2>
+            <p class="text-sm text-muted">How fast should the AI talk?</p>
+          </div>
+        </div>
+
+        <div class="space-y-8">
+          <div class="grid grid-cols-4 gap-3">
+            @for (preset of speedPresets; track preset.value) {
+              <button 
+                (click)="onSpeedChange(preset.value)"
+                class="flex flex-col items-center gap-2 py-4 rounded-2xl border transition-all duration-300"
+                [class]="speechRate === preset.value 
+                  ? 'bg-primary text-white border-primary shadow-glow' 
+                  : 'bg-white/5 text-muted border-white/10 hover:border-white/30'">
+                <i class="fa-solid text-lg" [class]="getIconForPreset(preset.label)"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">{{ preset.label }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex justify-between text-xs font-bold text-muted uppercase tracking-tighter">
+              <span>Slower</span>
+              <span class="text-primary text-lg tracking-normal">{{ speechRate }}x</span>
+              <span>Faster</span>
+            </div>
+            <input type="range" min="0.5" max="2" step="0.1"
+                   [ngModel]="speechRate" (ngModelChange)="onSpeedChange($event)"
+                   class="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary transition-all duration-300" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Preview Column -->
+    <div class="space-y-8">
+      <div class="sticky top-8 space-y-8">
+        
+        <!-- Live Preview Card -->
+        <div class="bg-primary/10 backdrop-blur-2xl border border-primary/20 rounded-3xl p-8 shadow-glow-sm relative overflow-hidden group">
+          <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+          
+          <div class="relative z-10 space-y-6 text-center">
+            <h3 class="text-lg font-bold text-foreground uppercase tracking-widest">Live Preview</h3>
+            
+            <div class="h-24 flex items-center justify-center">
+              @if (isSpeaking) {
+                <ui-waveform [width]="200" [height]="60" color="#6366f1" activeColor="#a855f7"></ui-waveform>
+              } @else {
+                <div class="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/20">
+                  <i class="fa-solid fa-volume-xmark text-2xl"></i>
+                </div>
+              }
+            </div>
+
+            <textarea 
+              [(ngModel)]="textToRead"
+              rows="3"
+              class="w-full bg-black/20 border border-white/10 rounded-2xl p-4 text-sm text-foreground placeholder:text-white/20 outline-none focus:border-primary/50 transition-all duration-300 resize-none"
+              placeholder="Type something to hear the AI..."></textarea>
+
+            <div class="flex flex-col gap-3">
+              @if (!isSpeaking) {
+                <button 
+                  (click)="speak()"
+                  class="w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-glow hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
+                  <i class="fa-solid fa-play"></i>
+                  Play Voice
+                </button>
+              } @else {
+                <button 
+                  (click)="stopSpeaking()"
+                  class="w-full py-4 bg-red-500 text-white font-bold rounded-2xl shadow-glow hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
+                  <i class="fa-solid fa-stop"></i>
+                  Stop
+                </button>
+              }
+              
+              <button 
+                (click)="navigateToLesson()"
+                class="w-full py-4 bg-white/5 text-foreground font-bold rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-circle-check"></i>
+                Save Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 text-center">
+          <p class="text-xs text-muted leading-relaxed">
+            <i class="fa-solid fa-circle-info mr-1 text-primary"></i>
+            Tip: Higher quality voices often have "Natural" or "Neural" in their name.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+>

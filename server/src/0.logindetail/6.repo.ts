@@ -52,7 +52,7 @@ export class RepoLoginDetailImpl implements IRepoLoginDetail {
   async getByName(inLoginDetailUsername: string): Promise<ILoginDetail | null> {
     const LoginDetailModel = this.getModel(DTOLoginDetail);
     const foundObj = await LoginDetailModel.findOne<DTOLoginDetail>({
-      where: { name: inLoginDetailUsername },
+      where: { adhaar: inLoginDetailUsername },
     });
     if (foundObj?.dataValues) {
       return this.convertToObject(foundObj?.dataValues);

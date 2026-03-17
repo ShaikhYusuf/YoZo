@@ -1,0 +1,44 @@
+<!-- Progress Bar Component (replaces mat-expansion-panel + mat-progress-bar) -->
+<div class="space-y-3">
+  <div *ngFor="let eachParent of parentList" class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+    <!-- Collapsible Header -->
+    <button 
+      class="w-full px-5 py-4 flex items-center gap-4 transition-colors duration-150 hover:bg-surface-hover/50"
+      (click)="togglePanel(eachParent, $event)" 
+      [disabled]="eachParent.childList?.length === 0">
+      <i class="fa-solid fa-chevron-right text-xs text-muted transition-transform duration-200" [class.rotate-90]="eachParent.expanded"></i>
+      <span class="font-medium text-foreground text-sm flex-shrink-0">{{ eachParent.name }}</span>
+      <div class="flex-1 bg-surface-border rounded-full h-2 overflow-hidden">
+        <div class="h-full bg-primary rounded-full transition-all duration-500" [style.width.%]="eachParent.score"></div>
+      </div>
+      <span class="text-xs text-muted font-mono">{{ eachParent.score }}%</span>
+    </button>
+
+    <!-- Expanded Content -->
+    <div *ngIf="eachParent.expanded" class="border-t border-surface-border px-5 py-3 space-y-2">
+      <div *ngFor="let eachChild of eachParent.childList">
+        <button (click)="onEachChildClick(eachParent.Id, eachChild.Id, $event)"
+          class="w-full flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-surface-hover/50 transition-colors duration-150">
+          <span class="text-sm text-foreground flex-shrink-0">{{ eachChild.name }}</span>
+          <div class="flex-1 bg-surface-border rounded-full h-1.5 overflow-hidden">
+            <div class="h-full bg-indigo-400 rounded-full transition-all duration-500" [style.width.%]="eachChild.score"></div>
+          </div>
+          <span class="text-xs text-muted font-mono">{{ eachChild.score }}%</span>
+        </button>
+
+        <div *ngIf="eachChild.childList" class="ml-6 space-y-1">
+          <div *ngFor="let eachGrandChild of eachChild.childList">
+            <button (click)="onEachGrandChildClick(eachParent.Id, eachChild.Id, eachGrandChild.Id, $event)"
+              class="w-full flex items-center gap-4 px-3 py-1.5 rounded-md hover:bg-surface-hover/50 transition-colors duration-150">
+              <span class="text-xs text-muted flex-shrink-0">{{ eachGrandChild.name }}</span>
+              <div class="flex-1 bg-surface-border rounded-full h-1 overflow-hidden">
+                <div class="h-full bg-violet-400 rounded-full transition-all duration-500" [style.width.%]="eachGrandChild.score"></div>
+              </div>
+              <span class="text-xs text-muted font-mono">{{ eachGrandChild.score }}%</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

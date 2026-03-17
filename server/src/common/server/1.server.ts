@@ -12,6 +12,7 @@ import { ILogger, LoggerService } from "../service/logger.service";
 import { serverConfig } from "./0.server-config";
 import { ServerHealth } from "./2.server-health";
 import { ServiceTenant } from "../service/tenant.service";
+import { SocketService } from "../service/socket.service";
 
 export class Server {
   private logger: ILogger;
@@ -20,6 +21,7 @@ export class Server {
   private app: Application;
   private server!: HttpServer;
   private healthServer!: ServerHealth;
+  private socketService!: SocketService;
   private isServerRunning = false;
 
   constructor() {
@@ -29,6 +31,7 @@ export class Server {
     this.app = new App().init();
     this.server = http.createServer(this.app);
     this.healthServer = new ServerHealth(this.logger);
+    this.socketService = new SocketService();
   }
 
   async startServer(): Promise<void> {
@@ -39,6 +42,7 @@ export class Server {
       this.server.listen(serverConfig.port, async () => {
         this.logger.info(`Server Started at port ${serverConfig.port}`);
         try {
+          this.socketService.init(this.server);
           await this.healthServer.start(Number(serverConfig.healthPort));
           this.isServerRunning = true;
         } catch (err) {

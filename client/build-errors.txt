@@ -1,0 +1,1204 @@
+﻿
+> yozo-client@1.0.0 build
+> ng build
+
+[33mΓ¥»[39m Building...
+[32mΓ£ö[39m Building...
+Application bundle generation failed. [4.501 seconds]
+
+node.exe : 
+[1m[31m[31mX [41;31
+m[[41;97mERROR[41;31m
+][0m [1mNG5002: 
+Opening tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+At C:\nvm4w\nodejs\npm.
+ps1:16 char:5
++     & 
+"$basedir/node$exe"  "$
+basedir/node_modules/np
+m/bin/npm-cli.js" ...
++     ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : 
+NotSpecified:     
+([1m[31m[31mX...r   
+ -compiler][0m:Strin  
+  g) [], RemoteExcepti 
+   on
+    + 
+FullyQualifiedErro    
+rId : NativeCommandE   
+ rror
+ 
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.html:8:6:
+[37m      8 Γöé       
+[32m<i 
+class="fa-solid" 
+[class]="isFormVisible 
+? "edit[37m" : 
+"add"">...
+        Γò╡       [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~[0m
+
+  Error occurs in the 
+template of component 
+LessonSectionComponent.
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.ts:19:15:
+[37m      19 Γöé   
+templateUrl: [32m'./le
+ssonsection.component.h
+tml'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.html:8:67:
+[37m      8 Γöé ...las
+s]="isFormVisible ? 
+"edit" : "add"">[32m</
+i>[37m<i 
+class="fa-solid"></i>
+        Γò╡            
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+LessonSectionComponent.
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.ts:19:15:
+[37m      19 Γöé   
+templateUrl: [32m'./le
+ssonsection.component.h
+tml'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.html:69:4:
+[37m      69 Γöé     
+[32m<i 
+class="fa-solid" 
+[class]="isEditMode ? 
+"edit[37m" : 
+"add""></i>...
+         Γò╡     [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+[0m
+
+  Error occurs in the 
+template of component 
+LessonSectionComponent.
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.ts:19:15:
+[37m      19 Γöé   
+templateUrl: [32m'./le
+ssonsection.component.h
+tml'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.html:69:62:
+[37m      69 Γöé 
+...[class]="isEditMode 
+? "edit" : "add"">[32m
+</i>[37m<i 
+class="fa-solid"></i>
+         Γò╡           
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+LessonSectionComponent.
+
+    src/app/lesson-sect
+ion/lessonsection.compo
+nent.ts:19:15:
+[37m      19 Γöé   
+templateUrl: [32m'./le
+ssonsection.component.h
+tml'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson/less
+on.component.html:8:6:
+[37m      8 Γöé       
+[32m<i 
+class="fa-solid" 
+[class]="isFormVisible 
+? "edit[37m" : 
+"add"">...
+        Γò╡       [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~[0m
+
+  Error occurs in the 
+template of component 
+LessonComponent.
+
+    src/app/lesson/less
+on.component.ts:18:15:
+[37m      18 Γöé   
+templateUrl: [32m'./le
+sson.component.html'[3
+7m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson/less
+on.component.html:8:67:
+[37m      8 Γöé ...las
+s]="isFormVisible ? 
+"edit" : "add"">[32m</
+i>[37m<i 
+class="fa-solid"></i>
+        Γò╡            
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+LessonComponent.
+
+    src/app/lesson/less
+on.component.ts:18:15:
+[37m      18 Γöé   
+templateUrl: [32m'./le
+sson.component.html'[3
+7m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson/less
+on.component.html:45:4:
+[37m      45 Γöé     
+[32m<i 
+class="fa-solid" 
+[class]="isEditMode ? 
+"edit[37m" : 
+"add""></i>...
+         Γò╡     [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+[0m
+
+  Error occurs in the 
+template of component 
+LessonComponent.
+
+    src/app/lesson/less
+on.component.ts:18:15:
+[37m      18 Γöé   
+templateUrl: [32m'./le
+sson.component.html'[3
+7m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/lesson/less
+on.component.html:45:62
+:
+[37m      45 Γöé 
+...[class]="isEditMode 
+? "edit" : "add"">[32m
+</i>[37m<i 
+class="fa-solid"></i>
+         Γò╡           
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+LessonComponent.
+
+    src/app/lesson/less
+on.component.ts:18:15:
+[37m      18 Γöé   
+templateUrl: [32m'./le
+sson.component.html'[3
+7m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2345: Argument 
+of type 'number | 
+undefined' is not 
+assignable to 
+parameter of type 
+'number'.
+  Type 'undefined' is 
+not assignable to type 
+'number'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/login-detai
+l/logindetail.component
+.html:44:57:
+[37m      44 Γöé ...ck
+)="deleteLoginDetail(el
+ement.[32mId[37m)" 
+class="text-red-500 
+hover:t...
+         Γò╡           
+                       
+ [32m~~[0m
+
+  Error occurs in the 
+template of component 
+LoginDetailComponent.
+
+    src/app/login-detai
+l/logindetail.component
+.ts:20:15:
+[37m      20 Γöé   
+templateUrl: [32m'./lo
+gindetail.component.htm
+l'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/progress/pr
+ogress.component.html:8
+:6:
+[37m      8 Γöé       
+[32m<i 
+class="fa-solid" 
+[class]="isFormVisible 
+? "edit[37m" : 
+"add"">...
+        Γò╡       [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~[0m
+
+  Error occurs in the 
+template of component 
+ProgressComponent.
+
+    src/app/progress/pr
+ogress.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./pr
+ogress.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/progress/pr
+ogress.component.html:8
+:67:
+[37m      8 Γöé ...las
+s]="isFormVisible ? 
+"edit" : "add"">[32m</
+i>[37m<i 
+class="fa-solid"></i>
+        Γò╡            
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+ProgressComponent.
+
+    src/app/progress/pr
+ogress.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./pr
+ogress.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/progress/pr
+ogress.component.html:7
+9:4:
+[37m      79 Γöé     
+[32m<i 
+class="fa-solid" [class
+]=""edit[37m""></i><i 
+class="fa-solid"></i>
+         Γò╡     [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+ProgressComponent.
+
+    src/app/progress/pr
+ogress.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./pr
+ogress.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/progress/pr
+ogress.component.html:7
+9:41:
+[37m      79 Γöé     
+<i class="fa-solid" [cl
+ass]=""edit"">[32m</i>
+[37m<i 
+class="fa-solid"></i>
+         Γò╡           
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+ProgressComponent.
+
+    src/app/progress/pr
+ogress.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./pr
+ogress.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.html:8:6:
+[37m      8 Γöé       
+[32m<i 
+class="fa-solid" 
+[class]="isFormVisible 
+? "edit[37m" : 
+"add"">...
+        Γò╡       [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~[0m
+
+  Error occurs in the 
+template of component S
+choolStandardComponent.
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.ts:21:15:
+[37m      21 Γöé   
+templateUrl: [32m'./sc
+hoolstandard.component.
+html'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.html:8:67:
+[37m      8 Γöé ...las
+s]="isFormVisible ? 
+"edit" : "add"">[32m</
+i>[37m<i 
+class="fa-solid"></i>
+        Γò╡            
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component S
+choolStandardComponent.
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.ts:21:15:
+[37m      21 Γöé   
+templateUrl: [32m'./sc
+hoolstandard.component.
+html'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.html:49:4:
+[37m      49 Γöé     
+[32m<i 
+class="fa-solid" [class
+]=""add[37m""></i><i 
+class="fa-solid"></i>
+         Γò╡     [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~[0m
+
+  Error occurs in the 
+template of component S
+choolStandardComponent.
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.ts:21:15:
+[37m      21 Γöé   
+templateUrl: [32m'./sc
+hoolstandard.component.
+html'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.html:49:40:
+[37m      49 Γöé     
+<i class="fa-solid" [cl
+ass]=""add"">[32m</i>
+[37m<i 
+class="fa-solid"></i>
+         Γò╡           
+                       
+       [32m~~~~[0m
+
+  Error occurs in the 
+template of component S
+choolStandardComponent.
+
+    src/app/school-stan
+dard/schoolstandard.com
+ponent.ts:21:15:
+[37m      21 Γöé   
+templateUrl: [32m'./sc
+hoolstandard.component.
+html'[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2345: Argument 
+of type 'number | 
+undefined' is not 
+assignable to 
+parameter of type 
+'number'.
+  Type 'undefined' is 
+not assignable to type 
+'number'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/school/scho
+ol.component.html:34:52
+:
+[37m      34 Γöé ... (
+click)="deleteSchool(el
+ement.[32mId[37m)" 
+title="Delete college" 
+clas...
+         Γò╡           
+                       
+ [32m~~[0m
+
+  Error occurs in the 
+template of component 
+SchoolComponent.
+
+    src/app/school/scho
+ol.component.ts:20:15:
+[37m      20 Γöé   
+templateUrl: [32m'./sc
+hool.component.html'[3
+7m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2345: Argument 
+of type 'number | 
+undefined' is not 
+assignable to 
+parameter of type 
+'number'.
+  Type 'undefined' is 
+not assignable to type 
+'number'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/school/scho
+ol.component.html:37:57
+:
+[37m      37 Γöé ...ck
+)="onSchoolStandards(el
+ement.[32mId[37m)" 
+title="View semesters" 
+clas...
+         Γò╡           
+                       
+ [32m~~[0m
+
+  Error occurs in the 
+template of component 
+SchoolComponent.
+
+    src/app/school/scho
+ol.component.ts:20:15:
+[37m      20 Γöé   
+templateUrl: [32m'./sc
+hool.component.html'[3
+7m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/standard/st
+andard.component.html:8
+:6:
+[37m      8 Γöé       
+[32m<i 
+class="fa-solid" 
+[class]="isFormVisible 
+? "edit[37m" : 
+"add"">...
+        Γò╡       [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~[0m
+
+  Error occurs in the 
+template of component 
+StandardComponent.
+
+    src/app/standard/st
+andard.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./st
+andard.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/standard/st
+andard.component.html:8
+:67:
+[37m      8 Γöé ...las
+s]="isFormVisible ? 
+"edit" : "add"">[32m</
+i>[37m<i 
+class="fa-solid"></i>
+        Γò╡            
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+StandardComponent.
+
+    src/app/standard/st
+andard.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./st
+andard.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/standard/st
+andard.component.html:4
+7:4:
+[37m      47 Γöé     
+[32m<i 
+class="fa-solid" 
+[class]="isEditMode ? 
+"edit[37m" : 
+"add""></i>...
+         Γò╡     [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+[0m
+
+  Error occurs in the 
+template of component 
+StandardComponent.
+
+    src/app/standard/st
+andard.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./st
+andard.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/standard/st
+andard.component.html:4
+7:62:
+[37m      47 Γöé 
+...[class]="isEditMode 
+? "edit" : "add"">[32m
+</i>[37m<i 
+class="fa-solid"></i>
+         Γò╡           
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+StandardComponent.
+
+    src/app/standard/st
+andard.component.ts:18:
+15:
+[37m      18 Γöé   
+templateUrl: [32m'./st
+andard.component.html'
+[37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/student/stu
+dent.component.html:8:6
+:
+[37m      8 Γöé       
+[32m<i 
+class="fa-solid" 
+[class]="isFormVisible 
+? "edit[37m" : 
+"add"">...
+        Γò╡       [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~[0m
+
+  Error occurs in the 
+template of component 
+StudentComponent.
+
+    src/app/student/stu
+dent.component.ts:17:15
+:
+[37m      17 Γöé   
+templateUrl: [32m'./st
+udent.component.html'[
+37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/student/stu
+dent.component.html:8:6
+7:
+[37m      8 Γöé ...las
+s]="isFormVisible ? 
+"edit" : "add"">[32m</
+i>[37m<i 
+class="fa-solid"></i>
+        Γò╡            
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+StudentComponent.
+
+    src/app/student/stu
+dent.component.ts:17:15
+:
+[37m      17 Γöé   
+templateUrl: [32m'./st
+udent.component.html'[
+37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Opening 
+tag "i" not 
+terminated.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/student/stu
+dent.component.html:52:
+4:
+[37m      52 Γöé     
+[32m<i 
+class="fa-solid" 
+[class]="isEditMode ? 
+"edit[37m" : 
+"add""></i>...
+         Γò╡     [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+[0m
+
+  Error occurs in the 
+template of component 
+StudentComponent.
+
+    src/app/student/stu
+dent.component.ts:17:15
+:
+[37m      17 Γöé   
+templateUrl: [32m'./st
+udent.component.html'[
+37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mNG5002: Unexpected 
+closing tag "i". It 
+may happen when the 
+tag has already been 
+closed by another tag. 
+For more info see https
+://www.w3.org/TR/html5/
+syntax.html#closing-ele
+ments-that-have-implied
+-end-tags[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/student/stu
+dent.component.html:52:
+62:
+[37m      52 Γöé 
+...[class]="isEditMode 
+? "edit" : "add"">[32m
+</i>[37m<i 
+class="fa-solid"></i>
+         Γò╡           
+                       
+        [32m~~~~[0m
+
+  Error occurs in the 
+template of component 
+StudentComponent.
+
+    src/app/student/stu
+dent.component.ts:17:15
+:
+[37m      17 Γöé   
+templateUrl: [32m'./st
+udent.component.html'[
+37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2345: Argument 
+of type 'number | 
+undefined' is not 
+assignable to 
+parameter of type 
+'number'.
+  Type 'undefined' is 
+not assignable to type 
+'number'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/subject/sub
+ject.component.html:24:
+53:
+[37m      24 Γöé ...(c
+lick)="deleteSubject(el
+ement.[32mId[37m)" 
+title="Delete" 
+class="text-...
+         Γò╡           
+                       
+ [32m~~[0m
+
+  Error occurs in the 
+template of component 
+SubjectComponent.
+
+    src/app/subject/sub
+ject.component.ts:18:15
+:
+[37m      18 Γöé   
+templateUrl: [32m'./su
+bject.component.html'[
+37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2345: Argument 
+of type 'number | 
+undefined' is not 
+assignable to 
+parameter of type 
+'number'.
+  Type 'undefined' is 
+not assignable to type 
+'number'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/subject/sub
+ject.component.html:25:
+49:
+[37m      25 Γöé 
+...ton (click)="onLesso
+ns(element.[32mId[37m
+)" title="View 
+Lessons" class=...
+         Γò╡           
+                       
+ [32m~~[0m
+
+  Error occurs in the 
+template of component 
+SubjectComponent.
+
+    src/app/subject/sub
+ject.component.ts:18:15
+:
+[37m      18 Γöé   
+templateUrl: [32m'./su
+bject.component.html'[
+37m,
+         Γò╡           
+     [32m~~~~~~~~~~~~~
+~~~~~~~~~~~~~[0m
+
+[39m[22m

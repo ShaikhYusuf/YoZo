@@ -1,1 +1,31 @@
-<router-outlet></router-outlet>
+<!-- Top Loading Progress Bar -->
+@if (loadingService.isLoading()) {
+  <div class="fixed top-0 left-0 right-0 z-[9999] h-1 bg-primary-light">
+    <div class="h-full bg-primary relative animate-[pulse_1s_ease-in-out_infinite] progress-bar-glow"></div>
+  </div>
+}
+
+<!-- Global Command Palette -->
+<ui-command-palette></ui-command-palette>
+<ui-loading-overlay></ui-loading-overlay>
+
+<!-- Floating Voice Indicator -->
+@if ((voiceService.volume$ | async) || 0 > 0.01) {
+  <div class="fixed bottom-8 right-8 z-[100] bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-4 shadow-2xl animate-in fade-in zoom-in duration-300">
+    <ui-waveform [width]="150" [height]="50"></ui-waveform>
+  </div>
+}
+
+<!-- Application Layout -->
+@if (isAuthScreen) {
+  <!-- Login screen takes full space -->
+  <router-outlet></router-outlet>
+} @else {
+  <!-- Main Dashboard Layout with Sidebar -->
+  <div class="flex h-screen w-full bg-background overflow-hidden">
+    <ui-sidebar></ui-sidebar>
+    <main class="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+}

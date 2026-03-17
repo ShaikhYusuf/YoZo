@@ -1,0 +1,48 @@
+<!-- True or False Component -->
+<div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+  <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
+    <span class="text-lg font-semibold text-foreground tracking-tight">True or False</span>
+    <div class="flex gap-2">
+      <button (click)="readAloud()" *ngIf="!isReading" class="text-primary hover:text-primary-hover p-1.5 rounded-md hover:bg-primary-light transition-colors"><i class="fa-solid fa-volume-high"></i></button>
+      <button (click)="stopReading()" *ngIf="isReading" class="text-red-500 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors"><i class="fa-solid fa-stop"></i></button>
+    </div>
+  </div>
+  <div class="p-6 space-y-6">
+    <div *ngFor="let eachTrueFalse of trueFalseQuestions" class="p-4 bg-surface border border-surface-border rounded-lg">
+      <p class="font-medium text-foreground mb-3">{{ eachTrueFalse.question }}</p>
+      <div class="flex gap-3">
+        <label class="flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all duration-200"
+          [ngClass]="{
+            'border-primary bg-primary-light': eachTrueFalse.selectedAnswer === true && !eachTrueFalse.answered,
+            'border-green-400 bg-green-50': eachTrueFalse.answered && eachTrueFalse.answer === true,
+            'border-red-400 bg-red-50': eachTrueFalse.answered && eachTrueFalse.selectedAnswer === true && eachTrueFalse.answer !== true,
+            'border-surface-border hover:border-primary/50': eachTrueFalse.selectedAnswer !== true && !eachTrueFalse.answered
+          }">
+          <input type="radio" [name]="'tf-' + eachTrueFalse.question" [value]="true" [(ngModel)]="eachTrueFalse.selectedAnswer" class="accent-primary" />
+          True
+        </label>
+        <label class="flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all duration-200"
+          [ngClass]="{
+            'border-primary bg-primary-light': eachTrueFalse.selectedAnswer === false && !eachTrueFalse.answered,
+            'border-green-400 bg-green-50': eachTrueFalse.answered && eachTrueFalse.answer === false,
+            'border-red-400 bg-red-50': eachTrueFalse.answered && eachTrueFalse.selectedAnswer === false && eachTrueFalse.answer !== false,
+            'border-surface-border hover:border-primary/50': eachTrueFalse.selectedAnswer !== false && !eachTrueFalse.answered
+          }">
+          <input type="radio" [name]="'tf-' + eachTrueFalse.question" [value]="false" [(ngModel)]="eachTrueFalse.selectedAnswer" class="accent-primary" />
+          False
+        </label>
+      </div>
+      <div *ngIf="eachTrueFalse.answered" class="mt-2 flex items-center gap-2 text-sm">
+        <i *ngIf="eachTrueFalse.selectedAnswer === eachTrueFalse.answer" class="fa-solid fa-circle-check text-green-500"></i>
+        <i *ngIf="eachTrueFalse.selectedAnswer !== eachTrueFalse.answer" class="fa-solid fa-circle-xmark text-red-500"></i>
+        <span [class]="eachTrueFalse.selectedAnswer === eachTrueFalse.answer ? 'text-green-700' : 'text-red-700'">
+          {{ eachTrueFalse.selectedAnswer === eachTrueFalse.answer ? 'Correct!' : 'Incorrect' }}
+        </span>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" (click)="submitAnswers()" [disabled]="!isAnyAnswerSelected()">Submit</button>
+      <button class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover active:scale-95" (click)="resetTrueFalse()">Reset</button>
+    </div>
+  </div>
+</div>

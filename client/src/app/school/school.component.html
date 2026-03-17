@@ -1,0 +1,84 @@
+<!-- School / College Management Page -->
+<div class="max-w-5xl mx-auto p-6 space-y-6">
+  
+  <!-- Header Card with Data Table -->
+  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-foreground tracking-tight">College Details</h2>
+      <button 
+        (click)="toggleForm()" 
+        class="inline-flex items-center gap-2 bg-primary text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95"
+      >
+        <i class="fa-solid" [class]="isFormVisible ? 'fa-pen' : 'fa-plus'"></i>
+        {{ isFormVisible ? 'Edit' : 'Add College' }}
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="text-xs text-muted uppercase bg-surface-hover/50 border-b border-surface-border">
+          <tr>
+            <th class="px-6 py-3 font-medium">Name</th>
+            <th class="px-6 py-3 font-medium">Address</th>
+            <th class="px-6 py-3 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let element of dataSource" class="border-b border-surface-border hover:bg-surface-hover/50 transition-colors duration-150">
+            <td class="px-6 py-4 text-foreground font-medium">{{ element.name }}</td>
+            <td class="px-6 py-4 text-muted">{{ element.address }}</td>
+            <td class="px-6 py-4 text-right space-x-1">
+              <button (click)="editSchool(element)" title="Edit college" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button (click)="deleteSchool(element.Id!)" title="Delete college" class="text-red-500 hover:text-red-600 transition-colors p-1.5 rounded-md hover:bg-red-50">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+              <button (click)="onSchoolStandards(element.Id!)" title="View semesters" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light">
+                <i class="fa-solid fa-list"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  @if (isFormVisible) {
+    <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-surface-border flex items-center gap-2">
+        <i class="fa-solid text-primary" [class]="isEditMode ? 'fa-pen' : 'fa-plus'"></i>
+        <h3 class="text-lg font-semibold text-foreground tracking-tight">
+          {{ isEditMode ? 'Update College' : 'Add College' }}
+        </h3>
+      </div>
+      <div class="p-6">
+        <form [formGroup]="schoolForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="flex flex-col">
+            <label class="mb-1.5 text-sm font-medium text-foreground">Name</label>
+            <input formControlName="name" placeholder="College name"
+              class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('name')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1.5 text-sm font-medium text-foreground">Address</label>
+            <input formControlName="address" placeholder="College address"
+              class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('address')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+          </div>
+          <div class="col-span-full flex items-center gap-3 pt-2">
+            <button type="submit" [disabled]="schoolForm.invalid"
+              class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ isEditMode ? 'Update' : 'Add College' }}
+            </button>
+            <button type="button" (click)="toggleForm()"
+              class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover hover:shadow-subtle active:scale-95">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
