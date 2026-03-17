@@ -3,6 +3,10 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   { 
     path: '', 
+    loadComponent: () => import('./landing-page/landing-page.component').then(m => m.LandingPageComponent) 
+  },
+  { 
+    path: 'login', 
     loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) 
   },
   { 
@@ -41,6 +45,10 @@ export const routes: Routes = [
     path: 'student/school/:schoolId/standard/:standardId',
     loadComponent: () => import('./student/student.component').then(m => m.StudentComponent),
   },
+  {
+    path: 'teacher/school/:schoolId/standard/:standardId',
+    loadComponent: () => import('./teacher/teacher.component').then(m => m.TeacherComponent),
+  },
   { 
     path: 'subject/standard/:standardId', 
     loadComponent: () => import('./subject/subject.component').then(m => m.SubjectComponent) 
@@ -71,6 +79,10 @@ export const routes: Routes = [
   {
     path: 'progress/school/:schoolId/standard/:standardId/student/:studentId',
     loadComponent: () => import('./progress/progress.component').then(m => m.ProgressComponent),
+  },
+  {
+    path: 'subject-dashboard2/school/:schoolId/standard/:standardId/student/:studentId',
+    loadComponent: () => import('./dashboards/subject-dashboard2/subject-dashboard2.component').then(m => m.SubjectDashboard2Component),
   },
 
   //====================================| Voice & AI routes (from Dip-Project)

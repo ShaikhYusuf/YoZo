@@ -63,4 +63,18 @@
            text-foreground outline-none transition-all duration-200
            focus:border-primary focus:ring-2 focus:ring-primary/20;
   }
+  
+  /* Brand Specific Components from Test */
+  .btn-brand {
+    @apply bg-gradient-to-br from-brand-indigo to-brand-rose text-white font-medium px-4 py-2 rounded-lg 
+           transition-all duration-300 
+           hover:shadow-[0_4px_15px_rgba(215,109,119,0.3)] hover:-translate-y-0.5 hover:opacity-95
+           active:scale-95 disabled:from-[#9c8cb1] disabled:to-[#e0b1b8] disabled:shadow-none disabled:transform-none;
+  }
+}
+
+@layer utilities {
+  .bg-brand-gradient {
+    @apply bg-gradient-to-br from-brand-indigo via-brand-rose to-brand-peach bg-[length:400%_400%];
+  }
 }

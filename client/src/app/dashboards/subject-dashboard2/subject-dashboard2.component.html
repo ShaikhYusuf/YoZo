@@ -1,0 +1,177 @@
+<div class="sidebar-overlay" [class.open]="isSidebarOpen" (click)="toggleSidebar()"></div>
+
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <aside class="sd-sidebar" [class.open]="isSidebarOpen">
+    <div class="sd-logo">📚 Learnzy</div>
+    <nav class="sd-nav">
+      <a *ngFor="let item of menuItems" [routerLink]="item.path" routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}" class="sd-nav-item">
+        <svg class="sd-nav-icon" [attr.viewBox]="item.viewBox" xmlns="http://www.w3.org/2000/svg">
+          <path fill="currentColor" [attr.d]="item.svgPath"></path>
+        </svg>
+        <span>{{item.label}}</span>
+      </a>
+      <a class="sd-nav-item mobile-close-btn" (click)="toggleSidebar()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        <span>Close</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="sd-main">
+    <header class="sd-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" (click)="toggleSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+            <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+        <div class="sd-welcome">Subjects <span class="highlight">Overview</span></div>
+      </div>
+    </header>
+
+    <div class="sd-content">
+      <div class="sd-section-title" style="margin-bottom: 24px;">Welcome, {{studentName}}!</div>
+
+      <!-- Subject cards grid -->
+      <div class="sd-cards-row" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+        <div class="sd-subj cursor-hover" *ngFor="let lesson of completedLessonSectionData" style="cursor: pointer;"
+          (click)="toggleDashboard(lesson.Id)" [class.active-subject]="showDashboard && selectedLessonId === lesson.Id">
+          <div class="sd-subj-icon"
+            style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none;">
+            <svg viewBox="0 0 384 512" style="width: 22px; height: 22px;">
+              <path fill="currentColor"
+                d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64zM96 64H288c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V96c0-17.7 14.3-32 32-32zm32 160a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zM96 352a32 32 0 1 1 0-64 32 32 0 1 1 0 64zM64 416c0-17.7 14.3-32 32-32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zM192 256a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm32 64a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm64-64a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm32 64a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zM288 448a32 32 0 1 1 0-64 32 32 0 1 1 0 64z">
+              </path>
+            </svg>
+          </div>
+          <div class="sd-subj-info">
+            <div class="sd-subj-name">{{ lesson.name }} <span *ngIf="showDashboard && selectedLessonId === lesson.Id"
+                style="font-size: 0.8rem; color: var(--primary); background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 12px; margin-left: 6px;">Viewing</span>
+            </div>
+            <div class="sd-subj-bar">
+              <div [style.width]="lesson.score + '%'"></div>
+            </div>
+          </div>
+          <span class="sd-subj-pct">{{ lesson.score | number:'1.0-1' }}%</span>
+        </div>
+      </div>
+
+      <!-- Detail Dashboard (Only shows when a subject is clicked) -->
+      <div class="dashboard-grid mt-8" *ngIf="showDashboard">
+
+        <!-- Next Lessons -->
+        <div class="grid-col">
+          <h3 class="sd-section-title" style="color: var(--primary); display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+            </svg>
+            Next Lessons
+          </h3>
+          <div class="sd-lessons-list">
+            <ng-container *ngIf="selectedLessonSections.length; else noNext">
+              <ng-container *ngFor="let lesson of selectedLessonSections">
+                <div class="sd-lesson-card"
+                  style="align-items: flex-start; background: rgba(99, 102, 241, 0.03); border-color: rgba(99, 102, 241, 0.15);">
+                  <div class="sd-lesson-info" style="width: 100%;">
+                    <div class="sd-lesson-title" style="color: var(--primary); margin-bottom: 12px;">{{ lesson.name }}
+                    </div>
+                    <div
+                      style="display: flex; flex-direction: column; gap: 4px; padding-left: 12px; border-left: 2px solid rgba(99, 102, 241, 0.2);">
+                      <ng-container *ngFor="let section of lesson.childList ?? []">
+                        <div class="cursor-pointer"
+                          style="font-size: 0.95rem; color: var(--text-mid); padding: 6px 8px; border-radius: 6px; transition: background 0.2s, color 0.2s;"
+                          (click)="clickByLessonSection({parentId: selectedLessonId ?? 0, childId: lesson.Id, grandChildId: section.Id})"
+                          onmouseover="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.color='var(--primary)'"
+                          onmouseout="this.style.background='transparent'; this.style.color='var(--text-mid)'">
+                          ▹ {{ section.name }}
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #noNext>
+              <div class="empty-state">No next lessons available.</div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Completed Lessons -->
+        <div class="grid-col">
+          <h3 class="sd-section-title" style="color: #059669; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Completed Lessons
+          </h3>
+          <div class="sd-lessons-list">
+            <ng-container *ngIf="filteredCompletedLessons.length; else noCompleted">
+              <ng-container *ngFor="let lesson of filteredCompletedLessons">
+                <div class="sd-lesson-card"
+                  style="align-items: flex-start; background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.15);">
+                  <div class="sd-lesson-info" style="width: 100%;">
+                    <div class="sd-lesson-title" style="color: #059669; margin-bottom: 12px;">{{ lesson.name }}</div>
+                    <div
+                      style="display: flex; flex-direction: column; gap: 4px; padding-left: 12px; border-left: 2px solid rgba(16, 185, 129, 0.2);">
+                      <ng-container *ngFor="let section of lesson.childList ?? []">
+                        <div style="font-size: 0.95rem; color: var(--text-mid); padding: 6px 8px;">
+                          ✓ {{ section.name }}
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #noCompleted>
+              <div class="empty-state">No completed lessons yet.</div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Pending Topics -->
+        <div class="grid-col" style="grid-column: 1 / -1; margin-top: 16px;">
+          <h3 class="sd-section-title" style="color: #d97706; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+              </path>
+            </svg>
+            Pending Topics
+          </h3>
+          <div class="sd-cards-row" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+            <ng-container *ngIf="filteredPendingLessons.length; else noPending">
+              <ng-container *ngFor="let lesson of filteredPendingLessons">
+                <div class="sd-lesson-card"
+                  style="align-items: flex-start; background: rgba(245, 158, 11, 0.03); border-color: rgba(245, 158, 11, 0.15);">
+                  <div class="sd-lesson-info" style="width: 100%;">
+                    <div class="sd-lesson-title" style="color: #d97706; margin-bottom: 12px;">{{ lesson.name }}</div>
+                    <div
+                      style="display: flex; flex-direction: column; gap: 4px; padding-left: 12px; border-left: 2px solid rgba(245, 158, 11, 0.2);">
+                      <ng-container *ngFor="let section of lesson.childList ?? []">
+                        <div style="font-size: 0.95rem; color: var(--text-mid); padding: 6px 8px;">
+                          • {{ section.name }}
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #noPending>
+              <div class="empty-state">No pending topics.</div>
+            </ng-template>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>

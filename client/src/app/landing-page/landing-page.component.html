@@ -1,0 +1,456 @@
+<div class="app-container">
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="navbar" [class.scrolled]="isScrolled">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <img src="images/logo.png" alt="Learnzy Logo" class="logo" onerror="this.style.display='none'" />
+        <span class="navbar-title">Learnzy</span>
+      </div>
+      <div class="nav-links">
+        <a (click)="scrollToSection('home')" class="nav-link">Home</a>
+        <a (click)="scrollToSection('features')" class="nav-link">Features</a>
+        <a (click)="scrollToSection('how-it-works')" class="nav-link">How It Works</a>
+        <a (click)="scrollToSection('contact')" class="nav-link">Contact</a>
+        <a [routerLink]="'/login'" class="nav-cta-btn">Login →</a>
+      </div>
+      <div class="hamburger" (click)="toggleMobileMenu()" [class.open]="mobileMenuOpen">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="mobile-menu" [class.open]="mobileMenuOpen">
+      <a (click)="scrollToSection('home'); toggleMobileMenu()">Home</a>
+      <a (click)="scrollToSection('features'); toggleMobileMenu()">Features</a>
+      <a (click)="scrollToSection('how-it-works'); toggleMobileMenu()">How It Works</a>
+      <a (click)="scrollToSection('contact'); toggleMobileMenu()">Contact</a>
+      <a [routerLink]="'/login'" class="nav-cta-btn">Login →</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <!-- ===== 1. HERO SECTION ===== -->
+    <section class="hero-section" id="home">
+      <div class="hero-bg-orb orb-1"></div>
+      <div class="hero-bg-orb orb-2"></div>
+      <div class="hero-bg-orb orb-3"></div>
+      <div class="section-container hero-container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            <span>🚀 AI-Powered Education Platform</span>
+          </div>
+          <h1 class="hero-title">
+            The Future of School<br>
+            Learning is <span class="gradient-text">Here</span>
+          </h1>
+          <p class="hero-subtitle">
+            Learnzy helps students learn step-by-step, tracks progress automatically, and helps teachers create
+            personalized question papers — powered by AI.
+          </p>
+          <div class="hero-pill-row">
+            <div class="typewriter-pill">
+              <span class="typewriter-dot"></span>
+              <span class="typewriter-text">{{ currentText }}<span class="cursor">|</span></span>
+            </div>
+          </div>
+          <div class="hero-buttons">
+            <a href="https://wa.me/919892058858?text=Hi%2C%20we%20are%20interested%20in%20a%20school%20demo%20for%20Learnzy."
+              target="_blank" class="btn-primary">WhatsApp Us 💬</a>
+            <a href="mailto:shaikh.zainab.arif@gmail.com?subject=Learnzy%20School%20Demo%20Request"
+              class="btn-primary">Email Us ✉️</a>
+            <a [routerLink]="'/login'" class="btn-primary">Login</a>
+          </div>
+        </div>
+        <div class="hero-visual animated">
+          <div class="hero-card-mockup">
+            <div class="mockup-header">
+              <div class="mockup-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <span class="mockup-title">Student Dashboard</span>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-subject-row" *ngFor="let s of mockSubjects">
+                <div class="mockup-icon" [style.background]="s.color">{{ s.icon }}</div>
+                <div class="mockup-info">
+                  <div class="mockup-name">{{ s.name }}</div>
+                  <div class="mockup-bar-wrap">
+                    <div class="mockup-bar" [style.width]="s.progress + '%'" [style.background]="s.color"></div>
+                  </div>
+                </div>
+                <span class="mockup-pct">{{ s.progress }}%</span>
+              </div>
+              <div class="mockup-footer-row">
+                <div class="mockup-stat">
+                  <span class="mstat-val">12</span>
+                  <span class="mstat-lbl">Topics Done</span>
+                </div>
+                <div class="mockup-stat">
+                  <span class="mstat-val">3</span>
+                  <span class="mstat-lbl">In Progress</span>
+                </div>
+                <div class="mockup-stat">
+                  <span class="mstat-val">🏆</span>
+                  <span class="mstat-lbl">Top Student</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2. PROBLEM SECTION ===== -->
+    <section class="problem-section" id="problem">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge problem-badge">⚠️ The Problem</div>
+          <h2 class="section-title">Problems in <span class="gradient-text">Traditional Learning</span></h2>
+          <p class="section-subtitle">Education systems around the world struggle with the same fundamental issues.</p>
+        </div>
+        <div class="problems-grid">
+          <div class="problem-card reveal" *ngFor="let p of problems; let i = index"
+            [style.animationDelay]="i * 0.1 + 's'">
+            <div class="problem-icon">{{ p.icon }}</div>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.desc }}</p>
+          </div>
+        </div>
+        <div class="problem-solution-banner reveal">
+          <div class="solution-glow"></div>
+          <span class="solution-label">💡 The Solution</span>
+          <h3>"Learnzy solves all of this — intelligently."</h3>
+          <p>Our AI-powered platform addresses every gap with smart technology and real-time insights.</p>
+          <a (click)="scrollToSection('features')" class="btn-primary">See How →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 3. FEATURES SECTION ===== -->
+    <section class="features-section" id="features">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">✨ Features</div>
+          <h2 class="section-title">Everything Schools <span class="gradient-text">Need</span></h2>
+          <p class="section-subtitle">A complete AI-powered education ecosystem for students, teachers, and
+            administrators.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card reveal" *ngFor="let f of features; let i = index"
+            [style.animationDelay]="i * 0.1 + 's'">
+            <div class="feature-icon-wrap" [style.background]="f.bg">
+              <span class="feature-emoji">{{ f.icon }}</span>
+            </div>
+            <h3 class="feature-title">{{ f.title }}</h3>
+            <p class="feature-desc">{{ f.desc }}</p>
+            <ul class="feature-bullets">
+              <li *ngFor="let b of f.bullets">✓ {{ b }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4. HOW IT WORKS ===== -->
+    <section class="how-it-works-section" id="how-it-works">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">🔄 Process</div>
+          <h2 class="section-title">How <span class="gradient-text">Learnzy Works</span></h2>
+          <p class="section-subtitle">A simple, powerful learning flow designed for mastery.</p>
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step reveal" *ngFor="let step of steps; let i = index; let last = last"
+            [style.animationDelay]="i * 0.15 + 's'">
+            <div class="flow-step-inner">
+              <div class="flow-num">{{ i + 1 }}</div>
+              <div class="flow-icon">{{ step.icon }}</div>
+              <div class="flow-step-text">
+                <h3>{{ step.title }}</h3>
+                <p>{{ step.desc }}</p>
+              </div>
+            </div>
+            <div class="flow-arrow" *ngIf="!last">↓</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. PLATFORM FOR EVERYONE ===== -->
+    <section class="for-everyone-section" id="for-everyone">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">👥 Who It's For</div>
+          <h2 class="section-title">Built for <span class="gradient-text">Everyone</span></h2>
+          <p class="section-subtitle">Learnzy serves every stakeholder in the school ecosystem.</p>
+        </div>
+        <div class="persona-grid">
+          <div class="persona-card reveal" *ngFor="let persona of personas; let i = index"
+            [style.animationDelay]="i * 0.15 + 's'">
+            <div class="persona-icon-wrap">
+              <span class="persona-emoji">{{ persona.emoji }}</span>
+            </div>
+            <div class="persona-label">For {{ persona.role }}</div>
+            <h3>{{ persona.title }}</h3>
+            <ul class="persona-list">
+              <li *ngFor="let item of persona.points">
+                <span class="persona-check">✓</span> {{ item }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 6. SCREENSHOTS SECTION ===== -->
+    <section class="screenshots-section" id="screenshots">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">📸 Platform Preview</div>
+          <h2 class="section-title">See <span class="gradient-text">Learnzy in Action</span></h2>
+          <p class="section-subtitle">A sneak peek into the clean, powerful interface your school will use daily.</p>
+        </div>
+        <div class="screenshots-tabs">
+          <button class="tab-btn" *ngFor="let tab of screenshotTabs; let i = index" [class.active]="activeTab === i"
+            (click)="activeTab = i">
+            {{ tab.icon }}&nbsp;{{ tab.label }}
+          </button>
+        </div>
+        <div class="screenshot-display">
+          <div class="screenshot-mockup">
+            <div class="screen-topbar">
+              <div class="screen-dots"><span></span><span></span><span></span></div>
+              <div class="screen-url">learnzy.app / {{ screenshotTabs[activeTab].url }}</div>
+            </div>
+            <div class="screen-content">
+              <ng-container [ngSwitch]="activeTab">
+                <!-- Student Dashboard -->
+                <div *ngSwitchCase="0" class="screen-dashboard">
+                  <div class="sd-sidebar">
+                    <div class="sd-logo">📚 Learnzy</div>
+                    <div class="sd-nav-item active">🏠 Dashboard</div>
+                    <div class="sd-nav-item">📖 Subjects</div>
+                    <div class="sd-nav-item">📊 Progress</div>
+                    <div class="sd-nav-item">🤖 AI Tutor</div>
+                    <div class="sd-nav-item">👤 Profile</div>
+                  </div>
+                  <div class="sd-main">
+                    <div class="sd-welcome">Welcome back, Aisha 👋</div>
+                    <div class="sd-cards-row">
+                      <div class="sd-stat-card"><span>12</span> Topics Done</div>
+                      <div class="sd-stat-card highlight-card"><span>85%</span> Avg Score</div>
+                      <div class="sd-stat-card"><span>5</span> Days Streak 🔥</div>
+                    </div>
+                    <div class="sd-section-title">Continue Learning</div>
+                    <div class="sd-subject-cards">
+                      <div class="sd-subj" *ngFor="let s of mockSubjects">
+                        <div class="sd-subj-icon" [style.background]="s.color">{{ s.icon }}</div>
+                        <div class="sd-subj-info">
+                          <div class="sd-subj-name">{{ s.name }}</div>
+                          <div class="sd-subj-bar">
+                            <div [style.width]="s.progress + '%'" [style.background]="s.color"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Lesson View -->
+                <div *ngSwitchCase="1" class="screen-lesson">
+                  <div class="lesson-header">📖 Chapter 3: Photosynthesis</div>
+                  <div class="lesson-body">
+                    <p class="lesson-para">Photosynthesis is the process used by plants, algae and certain bacteria to
+                      harness energy from sunlight and turn it into chemical energy...</p>
+                    <div class="lesson-highlight-box">💡 Key Concept: Plants use chlorophyll to absorb light energy and
+                      convert CO₂ + H₂O into glucose and oxygen.</div>
+                    <div class="lesson-action-row">
+                      <button class="lesson-btn">← Previous</button>
+                      <button class="lesson-btn primary-btn">Take Quiz →</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Quiz -->
+                <div *ngSwitchCase="2" class="screen-quiz">
+                  <div class="quiz-header">🧠 Quiz — Chapter 3</div>
+                  <div class="quiz-question">Q1. What is the primary pigment used in photosynthesis?</div>
+                  <div class="quiz-options">
+                    <div class="quiz-opt">A. Melanin</div>
+                    <div class="quiz-opt selected">B. Chlorophyll ✓</div>
+                    <div class="quiz-opt">C. Carotene</div>
+                    <div class="quiz-opt">D. Hemoglobin</div>
+                  </div>
+                  <div class="quiz-progress-row">
+                    <span>Question 1 of 5</span>
+                    <div class="quiz-bar">
+                      <div style="width:20%"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Teacher Dashboard -->
+                <div *ngSwitchCase="3" class="screen-teacher">
+                  <div class="teacher-header">👩‍🏫 Teacher Dashboard — Class 9A</div>
+                  <div class="teacher-stats">
+                    <div class="t-stat"><span>34</span> Students</div>
+                    <div class="t-stat"><span>72%</span> Avg Progress</div>
+                    <div class="t-stat"><span>5</span> Subjects</div>
+                  </div>
+                  <div class="teacher-table-wrap">
+                    <div class="teacher-table-header">
+                      <span>Student</span><span>Math</span><span>Science</span><span>English</span><span>Status</span>
+                    </div>
+                    <div class="teacher-table-row" *ngFor="let s of teacherTableData">
+                      <span>{{ s.name }}</span>
+                      <span class="t-score" [class.high]="s.math >= 80">{{ s.math }}%</span>
+                      <span class="t-score" [class.high]="s.science >= 80">{{ s.science }}%</span>
+                      <span class="t-score" [class.high]="s.english >= 80">{{ s.english }}%</span>
+                      <span class="t-badge" [class.green]="s.status === 'On Track'">{{ s.status }}</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Question Paper Generator -->
+                <div *ngSwitchCase="4" class="screen-qpgen">
+                  <div class="qp-header">📄 AI Question Paper Generator</div>
+                  <div class="qp-form">
+                    <div class="qp-field"><label>Subject</label>
+                      <div class="qp-select">Science – Chapter 3 ▾</div>
+                    </div>
+                    <div class="qp-field"><label>Number of Papers</label>
+                      <div class="qp-select">30 (one per student) ▾</div>
+                    </div>
+                    <div class="qp-field"><label>Difficulty</label>
+                      <div class="qp-select">Mixed ▾</div>
+                    </div>
+                    <div class="qp-field"><label>Question Types</label>
+                      <div class="qp-check-row">
+                        <span class="qp-check checked">MCQ</span>
+                        <span class="qp-check checked">True/False</span>
+                        <span class="qp-check checked">Fill Blanks</span>
+                        <span class="qp-check">Short Answer</span>
+                      </div>
+                    </div>
+                    <button class="qp-generate-btn">✨ Generate Papers</button>
+                    <div class="qp-info">Each student gets a unique paper — no cheating possible!</div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- ===== 11. CTA SECTION ===== -->
+    <section class="cta-section" id="cta">
+      <div class="cta-bg-orb"></div>
+      <div class="section-container">
+        <div class="cta-content">
+          <div class="cta-icon-row">🏫 🤖 📊</div>
+          <h2 class="cta-title">Ready to Transform <span class="gradient-text-light">Your School?</span></h2>
+          <p class="cta-subtitle">We are partnering with forward-thinking schools to pioneer AI-powered learning. Let's
+            schedule a session to demo Learnzy at your campus.</p>
+          <div class="cta-buttons">
+            <a href="https://wa.me/919892058858?text=Hi%2C%20we%20are%20interested%20in%20a%20school%20demo%20for%20Learnzy."
+              target="_blank" class="btn-outline-white btn-large">WhatsApp Us 💬</a>
+            <a href="mailto:shaikh.zainab.arif@gmail.com?subject=Learnzy%20School%20Demo%20Request"
+              class="btn-outline-white btn-large">Email Us ✉️</a>
+          </div>
+          <div class="cta-features-row">
+            <span>✓ In-person or virtual demo</span>
+            <span>✓ Tailored to your school's curriculum</span>
+            <span>✓ Early access pilot program</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 12. FAQ SECTION ===== -->
+    <section class="faq-section" id="faq">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-badge">❓ FAQ</div>
+          <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+          <p class="section-subtitle">Everything you need to know about Learnzy.</p>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item reveal" *ngFor="let faq of faqs; let i = index" [class.open]="openFaq === i">
+            <div class="faq-question" (click)="toggleFaq(i)">
+              <span>{{ faq.q }}</span>
+              <span class="faq-toggle">{{ openFaq === i ? '−' : '+' }}</span>
+            </div>
+            <div class="faq-answer" [class.visible]="openFaq === i">
+              <p>{{ faq.a }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="contact">
+    <div class="footer-top">
+      <div class="section-container footer-grid">
+        <div class="footer-col footer-brand-col">
+          <div class="footer-brand">
+            <img src="images/logo.png" alt="Learnzy" class="footer-logo" onerror="this.style.display='none'" />
+            <span class="footer-brand-name">Learnzy</span>
+          </div>
+          <p class="footer-tagline">AI-powered learning platform for schools. Help students master concepts, not just
+            memorize them.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-icon">𝕏</a>
+            <a href="#" class="social-icon">in</a>
+            <a href="#" class="social-icon">f</a>
+            <a href="#" class="social-icon">📸</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a (click)="scrollToSection('features')">Features</a></li>
+            <li><a (click)="scrollToSection('how-it-works')">How It Works</a></li>
+            <li><a (click)="scrollToSection('screenshots')">Platform Preview</a></li>
+            <li><a (click)="scrollToSection('future')">Roadmap</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul class="footer-contact-list">
+            <li>📧 shaikh.zainab.arif&#64;gmail.com</li>
+            <li>📞 +91 9892058858</li>
+            <li>📍 Stone Flower CHS, Bhiwandi</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="section-container footer-bottom-inner">
+        <p>© 2025 Learnzy. All rights reserved. Built with ❤️ for education.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top button -->
+  <button class="back-to-top" (click)="scrollToSection('home')" [class.visible]="isScrolled"
+    title="Back to top">↑</button>
+
+</div>
