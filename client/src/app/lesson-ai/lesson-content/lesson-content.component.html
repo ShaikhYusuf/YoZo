@@ -1,0 +1,24 @@
+<div class="container" *ngIf="content">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Explanation</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>{{ content.explanation }}</mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Examples</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ul>
+        @for (each_example of content.examples; track $index) {
+          <li>{{ each_example }}</li>
+        }
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div class="navigation-actions">
+    <button mat-raised-button color="primary" (click)="navigateToNextPage()">Next</button>
+</div>

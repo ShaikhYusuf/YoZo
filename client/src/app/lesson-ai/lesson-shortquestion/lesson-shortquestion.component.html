@@ -1,0 +1,44 @@
+<div class="sq-container" *ngIf="sqSet">
+  @for (item of history; track $index) {
+    <mat-card class="history-card">
+      <mat-card-content>
+        <p><strong>Q:</strong> {{ item.question }}</p>
+        <p><strong>Your Answer:</strong> {{ item.userAnswer }}</p>
+        <p><strong>Ideal Answer:</strong> {{ item.answer }}</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (currentIndex < sqSet.questions.length && !isShowingFeedback) {
+    <mat-card>
+      <mat-card-title>Question {{currentIndex + 1}}</mat-card-title>
+      <mat-card-content>
+        <p class="question-text">{{ sqSet.questions[currentIndex].question }}</p>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Your Answer</mat-label>
+          <textarea matInput [(ngModel)]="userAnswer" rows="2"></textarea>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-icon-button color="primary" (click)="submitAnswerVoice()">
+          <mat-icon>mic</mat-icon>
+        </button>
+        <button mat-raised-button (click)="submitAnswer()" [disabled]="!userAnswer">Submit</button>
+      </mat-card-actions>
+    </mat-card>
+  } @else {
+    <mat-card>
+      <mat-card-content>
+        <div class="explanation">
+          <p><strong>Explanation:</strong> {{ sqSet.questions[currentIndex].answer }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+
+<div class="navigation-actions">
+    <button mat-raised-button color="primary" (click)="navigateToNextPage()">
+      Next
+    </button>
+</div>

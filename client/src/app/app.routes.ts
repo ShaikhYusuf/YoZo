@@ -90,6 +90,27 @@ export const routes: Routes = [
     path: 'voice-settings', 
     loadComponent: () => import('./voice/voice-selection.component').then(m => m.VoiceSelectionComponent) 
   },
+  {
+    path: 'lesson-ai-hierarchy',
+    loadComponent: () => import('./lesson-ai/lesson-hierarchy/lesson-hierarchy.component').then(m => m.AiLessonHierarchyComponent)
+  },
+  {
+    path: 'lesson-ai-content',
+    loadComponent: () => import('./lesson-ai/lesson-content/lesson-content.component').then(m => m.AiLessonContentComponent)
+  },
+  {
+    path: 'lesson-ai-quiz',
+    loadComponent: () => import('./lesson-ai/lesson-quiz/lesson-quiz.component').then(m => m.AiLessonQuizComponent)
+  },
+  {
+    path: 'lesson-ai-truefalse',
+    loadComponent: () => import('./lesson-ai/lesson-truefalse/lesson-truefalse.component').then(m => m.AiLessonTrueFalseComponent)
+  },
+  {
+    path: 'lesson-ai-shortquestion',
+    loadComponent: () => import('./lesson-ai/lesson-shortquestion/lesson-shortquestion.component').then(m => m.AiLessonShortQuestionComponent)
+  },
+
 
   //====================================| Generic User Routes
   { 
