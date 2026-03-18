@@ -23,7 +23,7 @@ import { LoginDetailService } from './logindetail.service';
 export class LoginDetailComponent implements OnInit {
   displayedColumns: string[] = [
     'name',
-    'adhaar',
+    'username',
     'password',
     'role',
     'actions',
@@ -65,11 +65,12 @@ export class LoginDetailComponent implements OnInit {
           Validators.pattern('^[A-Za-z ]+$'),
         ],
       ],
-      adhaar: [
+      username: [
         '',
         [
           Validators.required,
-          Validators.pattern('^[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
+          Validators.minLength(3),
+          Validators.maxLength(255)
         ],
       ],
       password: [

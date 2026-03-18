@@ -1,5 +1,4 @@
-// server.ts
-import { inject } from "inversify";
+
 import dotenv from "dotenv";
 dotenv.config({ path: `${__dirname}/../.env` });
 import TYPES from "../../ioc/types";

@@ -51,12 +51,15 @@ export class DashboardServiceHelper {
   ) {}
 
   public initializeDashboardData(inSchoolId: number): Observable<void> {
+    console.log('Initializing Dashboard Data for School:', inSchoolId);
     return this.schoolService.get(inSchoolId).pipe(
       switchMap((school) => {
+        console.log('Fetched School:', school);
         this.schools = [school];
         return this.schoolStandardService.getAll(inSchoolId);
       }),
       switchMap((schoolStandards) => {
+        console.log('Fetched School Standards:', schoolStandards);
         this.schoolStandard = schoolStandards;
         return forkJoin({
           standards: this.getStandards(schoolStandards),
@@ -65,16 +68,20 @@ export class DashboardServiceHelper {
         });
       }),
       switchMap(({ standards, subjects, students }) => {
+        console.log('Fetched Data: Standards:', standards.length, 'Subjects:', subjects.length, 'Students:', students.length);
         this.standards = standards;
         this.subjects = subjects;
         this.students = students;
         return this.getLessons(subjects);
       }),
       switchMap((lessons) => {
+        console.log('Fetched Lessons:', lessons.length);
         this.lessons = lessons;
         return this.getLessonSections(lessons);
       }),
       map((lessonSections) => {
+        console.log('Fetched Lesson Sections RAW:', JSON.stringify(lessonSections, null, 2));
+        console.log('Fetched Lesson Sections:', lessonSections.length);
         this.lessonsections = lessonSections;
       })
     );
@@ -126,11 +133,12 @@ export class DashboardServiceHelper {
 
   //==========================================================| Overall Performance
   public getOverallPerformance(progressList: IProgress[]): number {
+    if (!progressList || progressList.length === 0) return 0;
     const total = progressList.reduce(
       (sum, p) => sum + p.quiz + p.fillblanks + p.truefalse,
       0
     );
-    return total / (progressList.length * 3);
+    return Math.round(total / (progressList.length * 3));
   }
 
   //==========================================================| Performance Grouping
@@ -242,89 +250,4 @@ export class DashboardServiceHelper {
       }
     );
   }
-
-  //==========================================================| Each Latest Assesment
-  // getLatestAssessments(
-  //   schoolId: number,
-  //   standardId: number,
-  //   studentId: number
-  // ) {
-  //   let filteredProgress = this.progress.filter(
-  //     (eachProgress) =>
-  //       eachProgress.school == schoolId &&
-  //       eachProgress.standard == standardId &&
-  //       eachProgress.student == studentId
-  //   );
-
-  //   const subjectMap = new Map<
-  //     number,
-  //     { lesson: number; qz: number; fb: number; tf: number }
-  //   >();
-
-  //   filteredProgress.forEach((p) => {
-  //     if (!subjectMap.has(p.subject!)) {
-  //       subjectMap.set(p.subject!, {
-  //         lesson: p.lesson!,
-  //         qz: p.Quiz,
-  //         fb: p.FillBlanks,
-  //         tf: p.TrueFalse,
-  //       });
-  //     }
-
-  //     if (p.Quiz != 0 || p.FillBlanks != 0 || p.TrueFalse != 0) {
-  //       let data = subjectMap.get(p.subject!)!;
-  //       data.lesson = p.lesson!;
-  //       data.qz = p.Quiz;
-  //       data.fb = p.FillBlanks;
-  //       data.tf = p.TrueFalse;
-  //     }
-  //   });
-
-  //   return Array.from(subjectMap.entries()).map(([subject, data]) => ({
-  //     subject: this.subjects.find((s) => s.Id === subject)?.name || 'Unknown',
-  //     lesson:
-  //       this.lessons.find((l) => l.Id === data.lesson!)?.Name || 'Unknown',
-  //     qz: data.qz,
-  //     fb: data.fb,
-  //     tf: data.tf,
-  //   }));
-  // }
-
-  // getComparisonData() {
-  //   return this.subjectScores.map((s) => ({
-  //     subject: s.subject,
-  //     studentScore: s.score,
-  //     classAvg: s.score - 5, // Assuming class average is 5% lower for now
-  //   }));
-  // }
-
-  // generateGoals() {
-  //   return this.comparisonData
-  //     .filter((data) => data.studentScore < data.classAvg)
-  //     .map(
-  //       (data) =>
-  //         `Improve in ${data.subject}. Your score: ${data.studentScore}%, Class Average: ${data.classAvg}%. Focus on weak areas.`
-  //     );
-  // }
-
-  // generateActivityFeed() {
-  //   const completed = this.progress.map(
-  //     (p) =>
-  //       `Completed ${
-  //         this.lessons.find((l) => l.Id === p.lesson)?.Name || 'Unknown'
-  //       } in ${
-  //         this.subjects.find((s) => s.Id === p.subject)?.name || 'Unknown'
-  //       } - Score: ${p.Quiz}%`
-  //   );
-  //   const nextLessons = this.lessons.filter(
-  //     (l) => !this.progress.some((p) => p.lesson === l.Id)
-  //   );
-  //   const upcoming = nextLessons.map(
-  //     (l) =>
-  //       `Upcoming lesson: ${l.Name} in ${
-  //         this.subjects.find((s) => s.Id === l.subject)?.name || 'Unknown'
-  //       }`
-  //   );
-  //   return [...completed, ...upcoming];
-  // }
 }

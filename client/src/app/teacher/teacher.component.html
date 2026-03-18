@@ -25,9 +25,9 @@
         <td mat-cell *matCellDef="let element">{{ element.name }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="adhaar">
-        <th mat-header-cell *matHeaderCellDef>Adhaar</th>
-        <td mat-cell *matCellDef="let element">{{ element.adhaar }}</td>
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef>Username</th>
+        <td mat-cell *matCellDef="let element">{{ element.username }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -78,9 +78,9 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-label>Adhaar</mat-label>
-        <input matInput formControlName="adhaar" />
-        <mat-error *ngFor="let error of getErrorMessages('adhaar')">{{
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+        <mat-error *ngFor="let error of getErrorMessages('username')">{{
           error
         }}</mat-error>
       </mat-form-field>

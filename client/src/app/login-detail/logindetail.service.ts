@@ -7,7 +7,7 @@ import { ILoginDetail } from './logindetail.model';
   providedIn: 'root',
 })
 export class LoginDetailService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'http://localhost:5050/v1';
 
   data: ILoginDetail[] = [];
 

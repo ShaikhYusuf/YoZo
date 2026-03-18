@@ -7,7 +7,7 @@ export interface IRepoLoginDetail {
   isExist(inLoginDetailId: number): Promise<boolean>;
   getAll(): Promise<ILoginDetail[] | null>;
   getById(inLoginDetailId: number): Promise<ILoginDetail | null>;
-  getByName(inLoginDetailUsername: string): Promise<ILoginDetail | null>;
+  getByName(inUsername: string): Promise<ILoginDetail | null>;
   create(
     inLoginDetail: ILoginDetail,
     transaction?: Transaction

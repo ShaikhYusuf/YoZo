@@ -17,33 +17,28 @@ import { IFillInTheBlank, IQuiz, ITrueFalse } from './evaluation.service.model';
 import { LoadingService } from '../common/loading.service';
 import { AITaskService } from '../common/ai-task.service';
 
+import { ApiHeadersService } from '../common/api-headers.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class EvaluationService {
-  private apiUrl = 'http://localhost:3000/v1'; // Base Node API
-  private aiUrl = 'http://localhost:3000/v1/ai'; // AI Proxy routes
+  private apiUrl = 'http://localhost:5050/v1'; // Base Node API
+  private aiUrl = 'http://localhost:5050/v1/ai'; // AI Proxy routes
   private abortController: AbortController | null = null;
 
   NUMBER_OF_QUESTIONS = 3;
 
-  // Define the headers
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    tenantid: 'tenanta',
-    traceparent: '12345',
-    Authorization: 'Bearer Token', // Replace "Token" with your actual token
-  });
-
   constructor(
     private http: HttpClient,
     private loadingService: LoadingService,
-    private aiTaskService: AITaskService
+    private aiTaskService: AITaskService,
+    private apiHeaders: ApiHeadersService
   ) {}
 
   getLessonExplanation(lessonSectionId: number): Observable<any> {
     const path = `/content?path=${lessonSectionId}`;
-    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.headers }).pipe(
+    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.apiHeaders.headers }).pipe(
       tap((res: any) => {
         if (res.data?.task_id) {
           this.aiTaskService.trackTask(res.data.task_id, path);
@@ -82,7 +77,7 @@ export class EvaluationService {
 
   getQuizzes(lessonSectionId: number): Observable<any> {
     const path = `/quiz?path=${lessonSectionId}`;
-    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.headers }).pipe(
+    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.apiHeaders.headers }).pipe(
       tap((res: any) => {
         if (res.data?.task_id) {
           this.aiTaskService.trackTask(res.data.task_id, path);
@@ -94,7 +89,7 @@ export class EvaluationService {
   getFillBlanks(lessonSectionId: number): Observable<IFillInTheBlank[]> {
     return this.http
       .get<string>(`${this.apiUrl}/${lessonSectionId}/fillblank`, {
-        headers: this.headers,
+        headers: this.apiHeaders.headers,
       })
       .pipe(
         map((response: string) => {
@@ -111,7 +106,7 @@ export class EvaluationService {
 
   getTrueFalse(lessonSectionId: number): Observable<any> {
     const path = `/truefalse?path=${lessonSectionId}`;
-    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.headers }).pipe(
+    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.apiHeaders.headers }).pipe(
       tap((res: any) => {
         if (res.data?.task_id) {
           this.aiTaskService.trackTask(res.data.task_id, path);

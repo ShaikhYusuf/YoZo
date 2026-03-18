@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../common/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -13,7 +14,14 @@ export class ProfileComponent implements OnInit {
   userName = 'John Doe';
   userEmail = 'john.doe@example.com';
   
+  private authService = inject(AuthService);
+
   ngOnInit(): void {
-    // Ideally fetch standard profile info from auth service
+    const user = this.authService.user();
+    if (user) {
+      this.userRole = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Guest';
+      this.userName = user.name || 'Unknown User';
+      this.userEmail = user.username ? `${user.username}@yozo.edu` : 'No email provided'; // Fallback using username
+    }
   }
 }

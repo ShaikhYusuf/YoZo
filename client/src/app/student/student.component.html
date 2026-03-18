@@ -13,14 +13,14 @@
         <thead class="text-xs text-muted uppercase bg-surface-hover/50 border-b border-surface-border">
           <tr>
             <th class="px-6 py-3 font-medium">Name</th>
-            <th class="px-6 py-3 font-medium">Adhaar</th>
+            <th class="px-6 py-3 font-medium">Username</th>
             <th class="px-6 py-3 font-medium text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let element of dataSource" class="border-b border-surface-border hover:bg-surface-hover/50 transition-colors duration-150">
             <td class="px-6 py-4 text-foreground font-medium">{{ element.name }}</td>
-            <td class="px-6 py-4 text-muted">{{ element.adhaar }}</td>
+            <td class="px-6 py-4 text-muted">{{ element.username }}</td>
             <td class="px-6 py-4 text-right space-x-1">
               <button (click)="editStudent(element)" title="Edit" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light"><i class="fa-solid fa-pen-to-square"></i></button>
               <button (click)="deleteStudent(element.Id!)" title="Delete" class="text-red-500 hover:text-red-600 transition-colors p-1.5 rounded-md hover:bg-red-50"><i class="fa-solid fa-trash"></i></button>
@@ -46,9 +46,9 @@
             <span *ngFor="let error of getErrorMessages('name')" class="text-red-500 text-xs mt-1">{{ error }}</span>
           </div>
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Adhaar / ID</label>
-            <input formControlName="adhaar" placeholder="Student ID" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('adhaar')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+            <label class="mb-1.5 text-sm font-medium text-foreground">Username / ID</label>
+            <input formControlName="username" placeholder="Student Username" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('username')" class="text-red-500 text-xs mt-1">{{ error }}</span>
           </div>
           <div class="col-span-full flex items-center gap-3 pt-2">
             <button type="submit" [disabled]="studentForm.invalid" class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">{{ isEditMode ? 'Update' : 'Add Student' }}</button>

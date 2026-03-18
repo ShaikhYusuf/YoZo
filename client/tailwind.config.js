@@ -32,6 +32,7 @@ module.exports = {
         'glass': '0 4px 30px rgba(0, 0, 0, 0.05)',
         'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         'glow': '0 0 15px rgba(79, 70, 229, 0.3)',
+        'glow-sm': '0 0 8px rgba(79, 70, 229, 0.2)',
       },
       keyframes: {
         gradientBackground: {

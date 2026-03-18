@@ -1,13 +1,11 @@
-
-
-
-
-
+import logging
 from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional
-from langchain.output_parsers import PydanticOutputParser
+
+logger = logging.getLogger(__name__)
+from typing import List, Optional, Any
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.exceptions import OutputParserException
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 #------------------- Lesson Content Prompt Template ------------------#
 CONTENT_PROMPT_TEMPLATE = """
@@ -35,8 +33,8 @@ class LessonContent(BaseModel):
 
 class MyLessonContent():
     table_name = "lesson_contents"
-    llm = None
-    conn = None
+    llm: Any = None
+    conn: Any = None
 
     @classmethod
     def initialize(cls, llm, conn):
@@ -51,6 +49,9 @@ class MyLessonContent():
             input_variables=["paragraph"],
             partial_variables={"format_instructions": parser.get_format_instructions()}
         )
+
+        if cls.llm is None:
+            raise RuntimeError("LLM not initialized. Call MyLessonContent.initialize(llm, conn) first.")
 
         # Assuming cls.llm is already initialized as shown in previous turns
         chain = prompt | cls.llm | parser
@@ -76,16 +77,16 @@ class MyLessonContent():
                 raise
 
         if response is None:
-            raise RuntimeError("Failed to generate quiz after multiple attempts.")
+            raise RuntimeError("Failed to generate lesson content after multiple attempts.")
 
-        response.paragraph = input_content_text
-        if  response and \
-            response.explanation and \
-            response.summary:
-            full_script = (
-                f"Here is the explanation. {response.explanation}. "
-                f"To wrap up, here is the summary. {"\n".join(response.summary)}"
-            )
+        if response is not None:
+            response.paragraph = input_content_text
+            if response.explanation and response.summary:
+                summary_text = "\n".join(response.summary)
+                full_script = (
+                    f"Here is the explanation. {response.explanation}. "
+                    f"To wrap up, here is the summary. {summary_text}"
+                )
         
         cls.insert_data_db(
             path=path,
@@ -95,9 +96,18 @@ class MyLessonContent():
 
     @classmethod
     async def generate_response(cls, path: str) -> Optional[LessonContent]:
+        from lib.lesson_store import MyLessonStore
+        
         content = cls.read_data_db(path)
         if content:
             return content
+        
+        # If missing, try to generate it using base content from lesson_sections
+        section = MyLessonStore.read_section_db(path)
+        if section and section.content:
+            logger.info(f"On-demand generation triggered for content: {path}")
+            return await cls.generate_contents(path, section.content)
+            
         return None
 
     @classmethod
@@ -135,6 +145,10 @@ class MyLessonContent():
             "\n".join(data.examples) if isinstance(data.examples, list) else data.examples
         )
 
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for {path}")
+            return
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(create_table_query)
@@ -142,12 +156,17 @@ class MyLessonContent():
                 cls.conn.commit()
                 print(f"Successfully processed (Upsert): {path}")
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print(f"Error processing {path}: {e}")
             
     @classmethod
     def read_data_db(cls, path: str) -> Optional[LessonContent]:
         query = f"SELECT paragraph, explanation, summary, examples FROM {cls.table_name} WHERE path = %s"
+
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for {path}")
+            return None
 
         try:
             with cls.conn.cursor() as cur:

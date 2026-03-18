@@ -7,7 +7,7 @@ export interface IRepoStudent {
   isExist(inStudentId: number): Promise<boolean>;
   getAll(inSchoolId: number, inStandardId: number): Promise<IStudent[] | null>;
   getById(inStudentId: number): Promise<IStudent | null>;
-  getByAdhaar(inAdhaar: string): Promise<IStudent | null>;
+  getByUsername(inUsername: string): Promise<IStudent | null>;
   create(
     inStudent: IStudent,
     transaction?: Transaction

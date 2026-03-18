@@ -44,6 +44,7 @@ export class App {
 
     server.setErrorConfig((app: Application) => {
       app.use(this.middlewareService.middlewareException);
+      app.use(this.middlewareService.globalErrorHandler);
     });
 
     return server.build();

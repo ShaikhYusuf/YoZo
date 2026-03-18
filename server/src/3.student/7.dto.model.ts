@@ -4,7 +4,7 @@ import { IStudent } from "./0.model";
 export class DTOStudent extends Model {
   Id?: number;
   name!: string;
-  adhaar!: string;
+  username!: string;
   school?: number;
   standard?: number;
 }
@@ -25,7 +25,7 @@ export const initDTOStudentModel = (
         type: DataTypes.STRING,
         allowNull: false,
       },
-      adhaar: {
+      username: {
         type: DataTypes.STRING,
         allowNull: false,
       },

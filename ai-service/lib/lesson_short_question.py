@@ -1,10 +1,11 @@
 import json
 import numpy as np
+from typing import Any
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
-from langchain.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.exceptions import OutputParserException
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 from lib.utility import Utility
 
@@ -50,8 +51,8 @@ class ShortQuestionSet(BaseModel):
 
 class MyLessonShortQuestion():
     table_name = "short_answer_questions"
-    llm = None
-    conn = None
+    llm: Any = None
+    conn: Any = None
 
     @classmethod
     def initialize(cls, llm, conn):
@@ -71,7 +72,7 @@ class MyLessonShortQuestion():
         chain = prompt | cls.llm | parser
 
         max_attempts = 3
-        response = None
+        response: Any = None
         for attempt in range(1, max_attempts + 1):
             try:
                 response = chain.invoke({"paragraph": input_content_text})
@@ -90,12 +91,13 @@ class MyLessonShortQuestion():
                     continue
                 raise
 
-        if response is None:
-            raise RuntimeError("Failed to generate quiz after multiple attempts.")
+        if response is None or not hasattr(response, 'questions'):
+            raise RuntimeError("Failed to generate short questions after multiple attempts.")
 
-        for question in response.questions:
+        for question in (response.questions or []):
             embeddings = Utility.convert_text_to_embedding(question.answer)
-            question.answer_embedding = embeddings.tolist()
+            if embeddings is not None:
+                question.answer_embedding = embeddings.tolist()
 
         cls.insert_data_db(
             path=path,
@@ -105,8 +107,19 @@ class MyLessonShortQuestion():
 
     @classmethod
     async def generate_response(cls, path) -> Optional[ShortQuestionSet]:
+        from lib.lesson_store import MyLessonStore
+        
         question_answer_set = cls.read_from_db(path)
-        return question_answer_set    
+        if question_answer_set:
+            return question_answer_set
+            
+        # If missing, try to generate it using base content from lesson_sections
+        section = MyLessonStore.read_section_db(path)
+        if section and section.content:
+            print(f"On-demand generation triggered for short questions: {path}")
+            return await cls.generate_contents(path, section.content)
+            
+        return None    
 
     @classmethod
     def insert_data_db(cls, path: str, data: ShortQuestionSet):
@@ -133,6 +146,10 @@ class MyLessonShortQuestion():
         # Using json.dumps ensures the float precision is handled correctly for JSONB
         values = (path, json.dumps(questions_data))
 
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for Short Questions: {path}")
+            return
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(create_table_query)
@@ -140,13 +157,18 @@ class MyLessonShortQuestion():
                 cls.conn.commit()
                 print(f"Successfully saved Short Questions: {path}")
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print(f"Error saving Short Questions: {e}")
 
     @classmethod
     def read_from_db(cls, path: str) -> Optional[ShortQuestionSet]:
         query = f"SELECT questions_json FROM {cls.table_name} WHERE path = %s"
         
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for Short Questions read: {path}")
+            return None
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (path,))
@@ -160,7 +182,7 @@ class MyLessonShortQuestion():
                 # Reconstruct the ShortQuestionSet object
                 # This will automatically trigger the check_count validator
                 return ShortQuestionSet(
-                    questions=[ShortQuestion(**q) for q in questions_json]
+                    questions=[ShortQuestion(**q) for q in (questions_json or [])]
                 )
         except Exception as e:
             print(f"Error reading Short Questions: {e}")

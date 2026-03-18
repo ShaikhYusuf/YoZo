@@ -9,7 +9,7 @@ export const roleList = [
 export interface ILoginDetail {
   Id?: number;
   name: string;
-  adhaar: string;
+  username: string;
   password: string;
   role: RoleType;
 }

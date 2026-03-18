@@ -9,7 +9,7 @@ const studentSchema = z.object({
     .min(3)
     .max(255)
     .regex(/^[A-Za-z ]+$/),
-  adhaar: z.string().regex(/^[0-9]{4}-[0-9]{4}-[0-9]{4}$/),
+  username: z.string().min(3).max(255), // Relaxed constraint
   school: z.number().min(1).max(9999).nullable().optional(),
   standard: z.number().min(1).max(9999).nullable().optional(),
 });
@@ -29,18 +29,18 @@ const validateStudent = (
   }
 };
 
-const validateAdhaar = (
+const validateUsername = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
-    const adhaar = request.params.adhaar; // Extracting id from URL
-    const studentSchema = z.object({
-      adhaar: z.string().regex(/^[0-9]{4}-[0-9]{4}-[0-9]{4}$/),
+    const username = request.params.username; // Extracting username from URL
+    const usernameSchema = z.object({
+      username: z.string().min(3).max(255), // Relaxed constraint
     });
 
-    studentSchema.parse({ adhaar });
+    usernameSchema.parse({ username });
     next();
   } catch (error) {
     // Use the common error handler
@@ -48,4 +48,4 @@ const validateAdhaar = (
   }
 };
 
-export { validateStudent, validateAdhaar };
+export { validateStudent, validateUsername };

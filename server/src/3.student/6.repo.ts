@@ -1,4 +1,4 @@
-import { Model, Sequelize, Transaction } from "sequelize";
+import { Model, Transaction } from "sequelize";
 import { injectable } from "inversify";
 import { IStudent } from "./0.model";
 import { IRepoStudent } from "./5.repo.model";
@@ -54,10 +54,10 @@ export class RepoStudentImpl implements IRepoStudent {
     return null;
   }
 
-  async getByAdhaar(inAdhaar: string): Promise<IStudent | null> {
+  async getByUsername(inUsername: string): Promise<IStudent | null> {
     const StudentModel = this.getModel(DTOStudent);
     const foundObj = await StudentModel.findOne<DTOStudent>({
-      where: { adhaar: inAdhaar },
+      where: { username: inUsername },
     });
     if (foundObj?.dataValues) {
       return this.convertToObject(foundObj?.dataValues);
@@ -108,7 +108,7 @@ export class RepoStudentImpl implements IRepoStudent {
     return {
       Id: srcObject.Id,
       name: srcObject.name,
-      adhaar: srcObject.adhaar,
+      username: srcObject.username,
       school: srcObject.school,
       standard: srcObject.standard,
     };

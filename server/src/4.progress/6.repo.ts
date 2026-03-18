@@ -1,4 +1,4 @@
-import { Model, Sequelize, Transaction } from "sequelize";
+import { Model, Transaction } from "sequelize";
 import { injectable } from "inversify";
 import { IProgress } from "./0.model";
 import { IRepoProgress } from "./5.repo.model";

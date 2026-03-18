@@ -2,10 +2,10 @@ import { ITenant } from "../service/tenant.service";
 import { getEnvVariable, validateEnvVariables } from "../utility/env-utils";
 
 const DEFAULT_OPTIONS = {
-  dialect: "postgres", // Switched from MySQL to PostgreSQL for YoZo
+  dialect: "postgres", // Using PostgreSQL for YoZo
   pool: {
-    max: 10,
-    min: 0,
+    max: 20,
+    min: 5,
     acquire: 30000,
     idle: 10000,
   },

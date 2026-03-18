@@ -78,6 +78,10 @@ class MyLessonStore():
         );
         """
 
+        if cls.conn is None:
+            print("Error: Database connection not initialized.")
+            return
+
         try:
             with cls.conn.cursor() as cur:
 
@@ -155,7 +159,8 @@ class MyLessonStore():
                 cls.conn.commit()
 
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print("Error inserting book:", e)
 
     # ------------------------------------------------
@@ -168,6 +173,9 @@ class MyLessonStore():
         SELECT path, content
         FROM {cls.table_sections}
         """
+        if cls.conn is None:
+            return None
+
         try:
             with cls.conn.cursor() as cur:
 
@@ -194,6 +202,9 @@ class MyLessonStore():
         FROM {cls.table_sections}
         WHERE path = %s
         """
+
+        if cls.conn is None:
+            return None
 
         try:
             with cls.conn.cursor() as cur:
@@ -226,6 +237,9 @@ class MyLessonStore():
         """
 
         results = []
+
+        if cls.conn is None:
+            return results
 
         try:
             with cls.conn.cursor() as cur:
@@ -260,6 +274,9 @@ class MyLessonStore():
         WHERE path = %s
         """
 
+        if cls.conn is None:
+            return None
+
         try:
             with cls.conn.cursor() as cur:
 
@@ -284,7 +301,7 @@ class MyLessonStore():
     async def generate_contents(cls, 
                             path: str, 
                             input_content_text: str
-                            ) -> str:
+                            ) -> None:
         print(f"Generating Lesson Content for {path}...")
         content = MyLessonContent()
         content.initialize(cls.llm, cls.conn)
@@ -331,6 +348,9 @@ class MyLessonStore():
         """
 
         results = []
+
+        if cls.conn is None:
+            return results
 
         try:
             with cls.conn.cursor() as cur:
@@ -387,13 +407,17 @@ class MyLessonStore():
         SET quiz_score = %s
         WHERE path = %s
         """
+        if cls.conn is None:
+            return False
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (quiz_score, path))
             cls.conn.commit()
             return True
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print("Error updating quiz score:", e)
             return False
 
@@ -404,13 +428,17 @@ class MyLessonStore():
         SET truefalse_score = %s
         WHERE path = %s
         """
+        if cls.conn is None:
+            return False
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (truefalse_score, path))
             cls.conn.commit()
             return True
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print("Error updating true/false score:", e)
             return False
 
@@ -421,13 +449,17 @@ class MyLessonStore():
         SET shortquestion_score = %s
         WHERE path = %s
         """
+        if cls.conn is None:
+            return False
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (shortquestion_score, path))
             cls.conn.commit()
             return True
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print("Error updating short‑question score:", e)
             return False
 
@@ -439,12 +471,16 @@ class MyLessonStore():
         SET content = %s
         WHERE path = %s
         """
+        if cls.conn is None:
+            return False
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (content, path))
             cls.conn.commit()
             return cur.rowcount > 0 if hasattr(cur, 'rowcount') else True
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print("Error updating section content:", e)
             return False

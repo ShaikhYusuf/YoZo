@@ -57,7 +57,7 @@ export class Validate {
 
   // Extract token from the request headers
   private extractToken(req: Request): string {
-    return (req.headers["authorization"]?.replace("bearer ", "") ??
+    return (req.headers["authorization"]?.toLowerCase().replace("bearer ", "") ??
       "") as string;
   }
 

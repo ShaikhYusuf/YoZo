@@ -3,11 +3,13 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IProgress } from './progress.model';
 
+import { ApiHeadersService } from '../common/api-headers.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ProgressService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'http://localhost:5050/v1';
   schoolId: number = 0;
   standardId: number = 0;
   studentId: number = 0;
@@ -15,21 +17,16 @@ export class ProgressService {
   lessonId: number = 0;
   data: IProgress[] = [];
 
-  // Define the headers
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    tenantid: 'tenanta',
-    traceparent: '12345',
-    Authorization: 'Bearer Token', // Replace "Token" with your actual token
-  });
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private apiHeaders: ApiHeadersService
+  ) {}
 
   getAllSchool(inSchoolId: number): Observable<IProgress[]> {
     return this.http.get<IProgress[]>(
       `${this.apiUrl}/progress/school/${inSchoolId}`,
       {
-        headers: this.headers,
+        headers: this.apiHeaders.headers,
       }
     );
   }
@@ -43,7 +40,7 @@ export class ProgressService {
     return this.http.get<IProgress[]>(
       `${this.apiUrl}/progress/school/${inSchoolId}/standard/${inStandardId}`,
       {
-        headers: this.headers,
+        headers: this.apiHeaders.headers,
       }
     );
   }
@@ -59,20 +56,20 @@ export class ProgressService {
     return this.http.get<IProgress[]>(
       `${this.apiUrl}/progress/school/${inSchoolId}/standard/${inStandardId}/student/${inStudentId}`,
       {
-        headers: this.headers,
+        headers: this.apiHeaders.headers,
       }
     );
   }
 
   get(inProgressId: number): Observable<IProgress> {
     return this.http.get<IProgress>(`${this.apiUrl}/progress/${inProgressId}`, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 
   add(inProgress: IProgress): Observable<IProgress> {
     return this.http.post<IProgress>(`${this.apiUrl}/progress`, inProgress, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 
@@ -81,14 +78,14 @@ export class ProgressService {
       `${this.apiUrl}/progress/${inProgress.Id}`,
       inProgress,
       {
-        headers: this.headers,
+        headers: this.apiHeaders.headers,
       }
     );
   }
 
   delete(inProgressId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/progress/${inProgressId}`, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 }

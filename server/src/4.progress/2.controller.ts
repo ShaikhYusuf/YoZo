@@ -4,14 +4,13 @@ import {
   controller,
   httpGet,
   httpPost,
-  httpPatch,
   httpDelete,
   request,
   response,
   httpPut,
 } from "inversify-express-utils";
 
-import { ILogger, LoggerService } from "../common/service/logger.service";
+import { ILogger } from "../common/service/logger.service";
 import TYPES from "../ioc/types";
 import { container } from "../ioc/container";
 

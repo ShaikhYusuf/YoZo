@@ -11,11 +11,12 @@ import { UtilChartComponent } from '../utils/chart/chart.component';
 import { BarPlotter } from '../dashboard.component.servicePlotter';
 import { ProgressService } from '../../progress/progress.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../common/auth.service';
 
 
 
 @Component({
-  selector: 'app-standard-dashboard',
+  selector: 'app-school-dashboard',
   imports: [
     CommonModule,UtilProgressBarComponent,
     UtilChartComponent
@@ -36,9 +37,10 @@ export class SchoolDashboardComponent {
     private route: ActivatedRoute,
     private router: Router,
     private progressService: ProgressService,
-    private serviceHelper: DashboardServiceHelper
+    private serviceHelper: DashboardServiceHelper,
+    private authService: AuthService
   ) {
-    this.schoolId = 1;
+    this.schoolId = this.authService.user().schoolId ?? 1;
   }
 
   ngOnInit(): void {
@@ -79,7 +81,6 @@ export class SchoolDashboardComponent {
   }
 
   clickByStandard(parentId: number) {
-    console.log('Standard Id: ' + parentId);
     this.router.navigate([
       'standard-dashboard',
       'school',
@@ -89,6 +90,5 @@ export class SchoolDashboardComponent {
   }
 
   clickBySubject(parentId: number) {
-    console.log('Subject Id: ' + parentId);
   }
 }

@@ -11,11 +11,7 @@ import { IChildNode } from '../utils/progress-bar/progress-bar.component';
 
 
 
-enum tagChildList {
-  completed,
-  next,
-  pending,
-}
+
 @Component({
   selector: 'app-subject-dashboard2',
   standalone: true,
@@ -51,7 +47,7 @@ export class SubjectDashboard2Component {
   }
 
   studentName = 'John Doe';
-  adhaarNumber = '2222-2222-2222';
+  username = '2222-2222-2222';
   standardName = '3rd';
 
   constructor(
@@ -69,7 +65,7 @@ export class SubjectDashboard2Component {
       this.studentId = +params['studentId'];
       this.studentService.get(this.studentId).subscribe((data) => {
         this.studentName = data.name;
-        this.adhaarNumber = data.adhaar;
+        this.username = data.username;
       });
       this.standardService.get(this.standardId).subscribe((data) => {
         this.standardName = data.name;
@@ -114,13 +110,7 @@ export class SubjectDashboard2Component {
       },
       {
         path: [
-          '/profile-dashboard',
-          'school',
-          this.schoolId,
-          'standard',
-          this.standardId,
-          'student',
-          this.studentId,
+          '/profile',
         ],
         label: 'Profile',
         icon: 'fa-user',
@@ -143,6 +133,7 @@ export class SubjectDashboard2Component {
       this.progressService
         .getAllStudent(this.schoolId, this.standardId, this.studentId)
         .subscribe((data) => {
+          if (!data) return;
           this.perfOverall = this.serviceHelper.getOverallPerformance(data);
           this.perfOverallPlotter = new BarPlotter(
             [this.perfOverall],
@@ -266,10 +257,10 @@ export class SubjectDashboard2Component {
   }) {
     console.log(
       'Subject Id: ' +
-      event.parentId +
-      ' Lesson Id: ' +
-      event.childId +
-      'Lesson Section Id: ',
+        event.parentId +
+        ' Lesson Id: ' +
+        event.childId +
+        'Lesson Section Id: ',
       event.grandChildId
     );
     let subjectId = event.parentId;

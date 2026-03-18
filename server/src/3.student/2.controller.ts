@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { inject } from "inversify";
 import {
   controller,
   httpGet,
@@ -11,7 +10,7 @@ import {
   httpPut,
 } from "inversify-express-utils";
 
-import { ILogger, LoggerService } from "../common/service/logger.service";
+import { ILogger } from "../common/service/logger.service";
 import TYPES from "../ioc/types";
 import { container } from "../ioc/container";
 
@@ -20,7 +19,7 @@ import { HttpStatusCode } from "../common/constant/http-status-code";
 import { validateId } from "../common/validator-id";
 
 import { IStudent } from "./0.model";
-import { validateAdhaar, validateStudent } from "./1.validator";
+import { validateUsername, validateStudent } from "./1.validator";
 import { IServiceStudent } from "./3.service.model";
 import { ServiceStudentProgressImpl } from "./3.service.student.progress";
 
@@ -69,11 +68,11 @@ export class ControllerStudent extends BaseController {
     }
   }
 
-  @httpGet("/adhaar/:adhaar", validateAdhaar)
-  async getByAdhaar(@request() req: Request, @response() res: Response) {
+  @httpGet("/username/:username", validateUsername)
+  async getByUsername(@request() req: Request, @response() res: Response) {
     try {
-      const adhaar = req.params.adhaar;
-      const student = await this.serviceStudent.getByAdhaar(adhaar);
+      const username = req.params.username;
+      const student = await this.serviceStudent.getByUsername(username);
       this.logger.info("Retrieved student:" + student);
 
       this.setCommonHeaders(res);

@@ -1,0 +1,4 @@
+﻿d:\Yusuf-Clg\YoZo\ai-service\migrate_schema.py
+  d:\Yusuf-Clg\YoZo\ai-service\migrate_schema.py:40:18 - error: Object of type "None" is not subscriptable (reportOptionalSubscript)
+  d:\Yusuf-Clg\YoZo\ai-service\migrate_schema.py:58:22 - error: Object of type "None" is not subscriptable (reportOptionalSubscript)
+2 errors, 0 warnings, 0 informations

@@ -4,14 +4,13 @@ import {
   controller,
   httpGet,
   httpPost,
-  httpPatch,
   httpDelete,
   request,
   response,
   httpPut,
 } from "inversify-express-utils";
 
-import { ILogger, LoggerService } from "../common/service/logger.service";
+import { ILogger } from "../common/service/logger.service";
 import TYPES from "../ioc/types";
 import { container } from "../ioc/container";
 
@@ -108,21 +107,24 @@ export class ControllerLoginDetail extends BaseController {
   @httpPost("/validate", authLimiter, validateLoginData)
   async validate(@request() req: Request, @response() res: Response) {
     try {
-      const username = req.body.name;
+      const username = req.body.username;
       const password = req.body.password;
+      this.logger.info(`Login attempt for user: ${username}`);
+      
       const status = await this.serviceLoginDetail.validate(username, password);
-      this.logger.info("Retrieved logindetail:" + status);
       this.setCommonHeaders(res);
 
       if (status && status.Id) {
+        this.logger.info(`Login successful for user: ${username}`);
         // Generate JWT token
         const token = generateToken(status.Id, status.name, status.role);
         res.status(HttpStatusCode.OK).json({ ...status, token });
       } else {
+        this.logger.warn(`Login failed for user: ${username} - Invalid credentials`);
         res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Invalid credentials" });
       }
     } catch (error: any) {
-      this.logger.error(error);
+      this.logger.error(`Login error for user: ${req.body.username}: ${error.message}`);
       return this.handleError(error, res);
     }
   }

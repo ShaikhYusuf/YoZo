@@ -131,13 +131,13 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
 
   faqs = [
-    { q: 'What is Learnzy?', a: 'Learnzy is an AI-powered school learning platform that helps students learn topic by topic, tracks their progress automatically, and helps teachers generate unique question papers for each student.' },
+    { q: 'What is YoZo?', a: 'YoZo is an AI-powered school learning platform that helps students learn topic by topic, tracks their progress automatically, and helps teachers generate unique question papers for each student.' },
     { q: 'How does the AI help students learn?', a: 'The AI presents lessons as structured explanations followed by quizzes. Students must demonstrate mastery before unlocking the next topic. It adapts to each student\'s pace and provides an AI doubt-solving chatbot.' },
     { q: 'Can teachers track individual student progress?', a: 'Yes! Teachers get real-time dashboards showing overall class progress, subject-wise performance, and individual student analytics including which topics they\'ve mastered and where they\'re struggling.' },
     { q: 'Can schools customize subjects and curriculum?', a: 'Absolutely. Schools can add their own subjects, lessons, and lesson sections. The platform is built to be fully customizable to match your school\'s curriculum and standards.' },
-    { q: 'How does Learnzy prevent cheating?', a: 'The AI Question Paper Generator creates a unique question paper for each student based on the same topics. Since no two papers are identical, cheating is effectively eliminated.' },
-    { q: 'Is the platform secure?', a: 'Yes. Learnzy uses secure authentication, encrypted data storage, and role-based access control. Teachers see only their classes, and students see only their own data.' },
-    { q: 'How quickly can we set up Learnzy for our school?', a: 'Most schools are fully set up within one day. Our onboarding process guides admins through adding teachers, students, subjects, and lessons step by step.' },
+    { q: 'How does YoZo prevent cheating?', a: 'The AI Question Paper Generator creates a unique question paper for each student based on the same topics. Since no two papers are identical, cheating is effectively eliminated.' },
+    { q: 'Is the platform secure?', a: 'Yes. YoZo uses secure authentication, encrypted data storage, and role-based access control. Teachers see only their classes, and students see only their own data.' },
+    { q: 'How quickly can we set up YoZo for our school?', a: 'Most schools are fully set up within one day. Our onboarding process guides admins through adding teachers, students, subjects, and lessons step by step.' },
   ];
 
   // -------- LIFECYCLE --------

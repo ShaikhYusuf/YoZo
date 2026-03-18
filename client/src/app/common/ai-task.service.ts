@@ -21,14 +21,12 @@ export class AITaskService {
   activeTasks = signal<Map<string, AITaskUpdate>>(new Map());
 
   constructor() {
-    this.socket = io('http://localhost:3000'); // Node server URL
+    this.socket = io('http://localhost:5050'); // Node server URL
 
     this.socket.on('connect', () => {
-      console.log('Connected to AI Task WebSocket');
     });
 
     this.socket.on('ai_task_update', (update: AITaskUpdate) => {
-      console.log('AI Task Update received:', update);
       this.handleUpdate(update);
     });
   }

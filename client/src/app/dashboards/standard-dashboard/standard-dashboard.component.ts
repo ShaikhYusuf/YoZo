@@ -80,11 +80,9 @@ export class StandardDashboardComponent {
   }
 
   clickBySubject(parentId: number) {
-    console.log('Subject Id: ' + parentId);
   }
 
   clickByStudent(parentId: number) {
-    console.log('Student Id: ' + parentId);
     this.router.navigate([
       'student-dashboard',
       'school',

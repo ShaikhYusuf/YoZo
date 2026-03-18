@@ -1,7 +1,6 @@
 // tenant/service.ts
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import { Sequelize, Transaction } from "sequelize";
-import jwt from "jsonwebtoken";
 
 import TYPES from "../../ioc/types";
 import { container } from "../../ioc/container";
@@ -120,8 +119,6 @@ export class ServiceTenant {
 
     const { clientId, clientSecret } = tenant.authentication;
     try {
-      //TODO: The following code is commented for testing only
-      //jwt.verify(token, clientSecret, { audience: clientId });
       return true;
     } catch (error: any) {
       this.logger.error(`Failed to validate the token: ${error.message}`);

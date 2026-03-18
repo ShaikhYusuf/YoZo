@@ -2,40 +2,36 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ISchool } from './school.model';
+import { ApiHeadersService } from '../common/api-headers.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SchoolService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'http://localhost:5050/v1';
 
   data: ISchool[] = [];
 
-  // Define the headers
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    tenantid: 'tenanta',
-    traceparent: '12345',
-    Authorization: 'Bearer Token', // Replace "Token" with your actual token
-  });
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private apiHeaders: ApiHeadersService
+  ) {}
 
   getAll(): Observable<ISchool[]> {
     return this.http.get<ISchool[]>(`${this.apiUrl}/school`, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 
   get(inSchoolId: number): Observable<ISchool> {
     return this.http.get<ISchool>(`${this.apiUrl}/school/${inSchoolId}`, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 
   add(inSchool: ISchool): Observable<ISchool> {
     return this.http.post<ISchool>(`${this.apiUrl}/school`, inSchool, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 
@@ -44,14 +40,14 @@ export class SchoolService {
       `${this.apiUrl}/school/${inSchool.Id}`,
       inSchool,
       {
-        headers: this.headers,
+        headers: this.apiHeaders.headers,
       }
     );
   }
 
   delete(inSchoolId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/school/${inSchoolId}`, {
-      headers: this.headers,
+      headers: this.apiHeaders.headers,
     });
   }
 }

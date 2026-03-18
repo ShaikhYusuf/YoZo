@@ -38,19 +38,51 @@ export class MiddlewareProvider {
 
     const originalSend = res.send;
     res.send = function (data) {
-      try {
-        if (res?.statusCode && data) {
-          const resBody = JSON.parse(data);
-          if (resBody?.Error) {
-            data = { code: res.statusCode, error: resBody.Error };
+      if (res?.statusCode && data) {
+        try {
+          // Only attempt to parse if it's a string
+          if (typeof data === "string") {
+            const resBody = JSON.parse(data);
+            if (resBody?.Error) {
+              data = JSON.stringify({
+                code: res.statusCode,
+                error: resBody.Error,
+              });
+            }
+          } else if (typeof data === "object" && data !== null) {
+            // If it's already an object, just wrap it if it has an Error property
+            if ((data as any).Error) {
+              data = { code: res.statusCode, error: (data as any).Error };
+            }
           }
+        } catch (err: any) {
+          // Silently ignore parsing errors for non-JSON content
         }
-      } catch (err: any) {
-        console.warn(`Error parsing response body: ${err.message}`);
       }
       return originalSend.call(this, data);
     };
     next();
+  }
+
+  // Global Error Handler to catch objects passed to next()
+  public globalErrorHandler(
+    err: any,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    const status = err.code || HttpStatusCode.INTERNAL_SERVER_ERROR;
+    const message = err.message || "Internal Server Error";
+
+    res.status(status).json({
+      status: "error",
+      code: status,
+      message: message,
+    });
   }
 
   // Main middleware to validate tenant information

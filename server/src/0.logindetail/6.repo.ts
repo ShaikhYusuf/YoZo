@@ -51,8 +51,14 @@ export class RepoLoginDetailImpl implements IRepoLoginDetail {
 
   async getByName(inLoginDetailUsername: string): Promise<ILoginDetail | null> {
     const LoginDetailModel = this.getModel(DTOLoginDetail);
+    const { Op } = require("sequelize");
     const foundObj = await LoginDetailModel.findOne<DTOLoginDetail>({
-      where: { adhaar: inLoginDetailUsername },
+      where: {
+        [Op.or]: [
+          { username: inLoginDetailUsername },
+          { name: inLoginDetailUsername }
+        ]
+      },
     });
     if (foundObj?.dataValues) {
       return this.convertToObject(foundObj?.dataValues);
@@ -103,7 +109,7 @@ export class RepoLoginDetailImpl implements IRepoLoginDetail {
     return {
       Id: srcObject.Id,
       name: srcObject.name,
-      adhaar: srcObject.adhaar,
+      username: srcObject.username,
       password: srcObject.password,
       role: srcObject.role as RoleType,
     };

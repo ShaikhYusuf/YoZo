@@ -28,7 +28,7 @@ class TaskStore:
         }
         return task_id
 
-    def update_task(self, task_id: str, status: TaskStatus, result: Any = None, error: str = None):
+    def update_task(self, task_id: str, status: TaskStatus, result: Any = None, error: Optional[str] = None):
         if task_id in self.tasks:
             self.tasks[task_id]["status"] = status.value
             self.tasks[task_id]["updated_at"] = time.time()

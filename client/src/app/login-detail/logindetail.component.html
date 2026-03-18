@@ -21,7 +21,7 @@
         <thead class="text-xs text-muted uppercase bg-surface-hover/50 border-b border-surface-border">
           <tr>
             <th class="px-6 py-3 font-medium">Name</th>
-            <th class="px-6 py-3 font-medium">Adhaar</th>
+            <th class="px-6 py-3 font-medium">Username</th>
             <th class="px-6 py-3 font-medium">Password</th>
             <th class="px-6 py-3 font-medium">Role</th>
             <th class="px-6 py-3 font-medium text-right">Actions</th>
@@ -30,7 +30,7 @@
         <tbody>
           <tr *ngFor="let element of dataSource" class="border-b border-surface-border hover:bg-surface-hover/50 transition-colors duration-150">
             <td class="px-6 py-4 text-foreground font-medium">{{ element.name }}</td>
-            <td class="px-6 py-4 text-muted">{{ element.adhaar }}</td>
+            <td class="px-6 py-4 text-muted">{{ element.username }}</td>
             <td class="px-6 py-4 text-muted font-mono text-xs">{{ element.password }}</td>
             <td class="px-6 py-4">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-light text-primary border border-primary/20">
@@ -72,12 +72,12 @@
             <span *ngFor="let error of getErrorMessages('name')" class="text-red-500 text-xs mt-1">{{ error }}</span>
           </div>
 
-          <!-- Adhaar -->
+          <!-- Username -->
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Adhaar</label>
-            <input formControlName="adhaar" placeholder="XXXX-XXXX-XXXX"
+            <label class="mb-1.5 text-sm font-medium text-foreground">Username</label>
+            <input formControlName="username" placeholder="Enter username"
               class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('adhaar')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+            <span *ngFor="let error of getErrorMessages('username')" class="text-red-500 text-xs mt-1">{{ error }}</span>
           </div>
 
           <!-- Password -->

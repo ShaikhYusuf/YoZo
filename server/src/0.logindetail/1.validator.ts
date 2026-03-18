@@ -8,14 +8,12 @@ const logindetailSchema = z.object({
   name: z
     .string()
     .min(3)
-    .max(255)
-    .regex(/^[A-Za-z ]+$/),
-  adhaar: z.string().regex(/^[0-9]{4}-[0-9]{4}-[0-9]{4}$/),
+    .max(255),
+  username: z.string().min(3).max(50),
   password: z
     .string()
     .min(5)
-    .max(128)
-    .regex(/^[A-Za-z0-9'.\-, ]+$/),
+    .max(128),
   role: z.enum(roleList),
 });
 
@@ -35,16 +33,14 @@ const validateLoginDetail = (
 };
 
 const loginDataSchema = z.object({
-  name: z
+  username: z
     .string()
     .min(3)
-    .max(255)
-    .regex(/^[A-Za-z ]+$/),
+    .max(255),
   password: z
     .string()
     .min(5)
-    .max(128)
-    .regex(/^[A-Za-z0-9'.\-, ]+$/),
+    .max(128),
 });
 
 const validateLoginData = (

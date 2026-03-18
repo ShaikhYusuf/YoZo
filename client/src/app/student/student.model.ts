@@ -1,7 +1,7 @@
 export interface IStudent {
   Id?: number;
   name: string;
-  adhaar: string;
+  username: string;
   school?: number;
   standard?: number;
 }

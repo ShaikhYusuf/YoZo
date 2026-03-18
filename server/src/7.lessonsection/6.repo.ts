@@ -120,6 +120,7 @@ export class RepoLessonSectionImpl implements IRepoLessonSection {
       fillblanks: srcObject.fillblanks?.slice(0, 1000),
       truefalse: srcObject.truefalse?.slice(0, 1000),
       subject: srcObject.subject,
+      lesson: srcObject.lesson,
     };
   }
 }

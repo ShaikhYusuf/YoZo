@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-limiter = Limiter(get_remote_address, app=app, default_limits=["30/minute"])
+limiter = Limiter(get_remote_address, app=app, default_limits=["300/minute"])
 
 _ingestor = None
 

@@ -4,7 +4,7 @@ import { ILoginDetail, roleList } from "./0.model";
 export class DTOLoginDetail extends Model {
   Id?: number;
   name!: string;
-  adhaar!: string;
+  username!: string;
   password!: string;
   role!: string | number | boolean;
 }
@@ -25,7 +25,7 @@ export const initDTOLoginDetailModel = (
         type: DataTypes.STRING,
         allowNull: false,
       },
-      adhaar: {
+      username: {
         type: DataTypes.STRING,
         allowNull: false,
       },

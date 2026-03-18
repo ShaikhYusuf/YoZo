@@ -21,8 +21,8 @@ export class ServiceStudentImpl implements IServiceStudent {
     return retObject;
   }
 
-  async getByAdhaar(inAdhaar: string): Promise<IStudent | null> {
-    const retObject = await this.repoService.getByAdhaar(inAdhaar);
+  async getByUsername(inUsername: string): Promise<IStudent | null> {
+    const retObject = await this.repoService.getByUsername(inUsername);
     return retObject;
   }
 

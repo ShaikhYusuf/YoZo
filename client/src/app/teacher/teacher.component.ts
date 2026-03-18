@@ -37,7 +37,7 @@ export class TeacherComponent implements OnInit {
   schoolId = 0;
   standardId = 0;
 
-  displayedColumns: string[] = ['name', 'adhaar', 'actions'];
+  displayedColumns: string[] = ['name', 'username', 'actions'];
   dataSource: ITeacher[] = [];
   isFormVisible = false;
   isEditMode = false;
@@ -85,11 +85,12 @@ export class TeacherComponent implements OnInit {
           Validators.pattern('^[A-Za-z ]+$'),
         ],
       ],
-      adhaar: [
+      username: [
         '',
         [
           Validators.required,
-          Validators.pattern('^[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
+          Validators.minLength(3),
+          Validators.maxLength(255)
         ],
       ],
     });

@@ -23,7 +23,7 @@
   flex: 1 1 calc(20.333% - 20px); /* Example of a 3-column layout for other cards */
   padding: 20px;
   border-radius: 8px;
-  background-color: white;
+  background-color: var(--surface);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -41,7 +41,7 @@ ul {
 }
 
 ul li {
-  background: #f4f4f4;
+  background: var(--surface-hover);
   margin: 5px 0;
   padding: 10px;
   border-radius: 5px;

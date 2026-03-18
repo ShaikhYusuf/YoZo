@@ -1,9 +1,10 @@
 import json
 import random
+from typing import Any
 from typing import Dict, Optional, List
 from pydantic import BaseModel, Field, field_validator
-from langchain.output_parsers import PydanticOutputParser
-from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
 
 #------------------- Match the Column Template ------------------#
 MATCHING_PROMPT_TEMPLATE = """
@@ -58,8 +59,8 @@ class MatchingMatchColumns(BaseModel):
     
 class MyLessonMatchColumn():
     table_name = "matching_quizzes_ordered"
-    llm = None
-    conn = None
+    llm: Any = None
+    conn: Any = None
 
     @classmethod
     def initialize(cls, llm, conn):
@@ -109,19 +110,28 @@ class MyLessonMatchColumn():
         # Store raw lists. JSONB preserves index order.
         values = (path, json.dumps(data.column_a), json.dumps(data.column_b))
 
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for {path}")
+            return
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(create_table_query)
                 cur.execute(upsert_query, values)
                 cls.conn.commit()
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print(f"Error saving quiz: {e}")
 
     @classmethod
     def read_from_db(cls, path: str) -> Optional[MatchingMatchColumns]:
         query = f"SELECT column_a, column_b FROM {cls.table_name} WHERE path = %s"
         
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for {path}")
+            return
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (path,))

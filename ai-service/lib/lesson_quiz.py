@@ -4,10 +4,10 @@ import logging
 import numpy as np
 
 from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional
-from langchain.output_parsers import PydanticOutputParser
+from typing import List, Optional, Any
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.exceptions import OutputParserException
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 from lib.utility import Utility
 
@@ -40,8 +40,8 @@ class Quiz(BaseModel):
     question: str = Field(description="The multiple-choice question text.")
     options: List[str] = Field(
         description="A list of exactly 4 options.", 
-        min_items=4, 
-        max_items=4
+        min_length=4, 
+        max_length=4
     )
     answer: str = Field(description="The correct option string from the options list.")
     answer_embedding: Optional[List[float]] = Field(default=None, description="The embedding vector of the correct answer.")
@@ -58,8 +58,8 @@ class QuizSet(BaseModel):
 
 class MyLessonQuiz():
     table_name = "multiple_choice_quizzes"
-    llm = None
-    conn = None
+    llm: Any = None
+    conn: Any = None
 
     @staticmethod
     def sanitize(raw: dict) -> dict:
@@ -68,20 +68,24 @@ class MyLessonQuiz():
 
         cleaned = []
         for q in raw["questions"]:
-            options = q.get("options", [])
-            if isinstance(options, list):
-                options = options[:4]
-                while len(options) < 4:
-                    options.append("Unknown")
+            options_raw = q.get("options", [])
+            if not isinstance(options_raw, list):
+                options_raw = list(options_raw) if hasattr(options_raw, "__iter__") else []
+            
+            # Use explicit list constructor to avoid Pyre slicing confusion
+            options = [str(options_raw[i]) for i in range(min(4, len(options_raw)))]
+            
+            while len(options) < 4:
+                options.append("Unknown")
 
             q["options"] = options
-            if "answer" not in q:
-                q["answer"] = options[0]
+            if "answer" not in q or not q["answer"]:
+                q["answer"] = options[0] if len(options) > 0 else "Unknown"
 
-            if "explanation" not in q:
+            if "explanation" not in q or not q["explanation"]:
                 q["explanation"] = "Explanation unavailable."
             cleaned.append(q)
-        raw["questions"] = cleaned[:5]
+        raw["questions"] = [cleaned[i] for i in range(min(5, len(cleaned)))]
         return raw
 
     @staticmethod
@@ -111,11 +115,14 @@ class MyLessonQuiz():
             partial_variables={"format_instructions": parser.get_format_instructions()}
         )
 
+        if cls.llm is None:
+            raise RuntimeError("LLM not initialized. Call MyLessonQuiz.initialize(llm, conn) first.")
+
         # Assuming cls.llm is already initialized as shown in previous turns
         chain = prompt | cls.llm | parser
 
         max_attempts = 3
-        response = None
+        response: Any = None
         for attempt in range(1, max_attempts + 1):
             try:
                 response = chain.invoke({"paragraph": input_content_text})
@@ -146,12 +153,13 @@ class MyLessonQuiz():
                 # If we can't recover, raise to surface the parsing issue.
                 raise
 
-        if response is None:
-            raise RuntimeError("Failed to generate quiz after multiple attempts.")
+        if response is None or not hasattr(response, 'questions') or response.questions is None:
+            raise RuntimeError("Failed to generate quiz or questions missing after multiple attempts.")
 
-        for question in response.questions:
+        for question in (response.questions or []):
             embeddings = Utility.convert_text_to_embedding(question.answer)
-            question.answer_embedding = embeddings.tolist()
+            if embeddings is not None:
+                question.answer_embedding = embeddings.tolist()
 
         cls.insert_data_db(
             path=path,
@@ -161,8 +169,19 @@ class MyLessonQuiz():
 
     @classmethod
     async def generate_response(cls, path) -> Optional[QuizSet]:
+        from lib.lesson_store import MyLessonStore
+        
         quiz_set = cls.read_from_db(path)
-        return quiz_set    
+        if quiz_set:
+            return quiz_set
+            
+        # If missing, try to generate it using base content from lesson_sections
+        section = MyLessonStore.read_section_db(path)
+        if section and section.content:
+            print(f"On-demand generation triggered for quiz: {path}")
+            return await cls.generate_contents(path, section.content)
+            
+        return None    
 
     @classmethod
     def insert_data_db(cls, path: str, data: QuizSet):
@@ -189,6 +208,10 @@ class MyLessonQuiz():
         # Using json.dumps ensures the float precision is handled correctly for JSONB
         values = (path, json.dumps(questions_data))
 
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for Quiz: {path}")
+            return
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(create_table_query)
@@ -196,13 +219,18 @@ class MyLessonQuiz():
                 cls.conn.commit()
                 print(f"Successfully saved Quiz: {path}")
         except Exception as e:
-            cls.conn.rollback()
+            if cls.conn:
+                cls.conn.rollback()
             print(f"Error saving Quiz: {e}")
 
     @classmethod
     def read_from_db(cls, path: str) -> Optional[QuizSet]:
         query = f"SELECT questions_json FROM {cls.table_name} WHERE path = %s"
         
+        if cls.conn is None:
+            print(f"Error: Database connection not initialized for Quiz read: {path}")
+            return None
+
         try:
             with cls.conn.cursor() as cur:
                 cur.execute(query, (path,))
@@ -216,7 +244,7 @@ class MyLessonQuiz():
                 # Reconstruct the Quiz object from the stored JSON list
                 # This will automatically trigger the check_count validator
                 return QuizSet(
-                    questions=[Quiz(**q) for q in questions_json]
+                    questions=[Quiz(**q) for q in (questions_json or [])]
                 )
         except Exception as e:
             print(f"Error reading Quiz: {e}")

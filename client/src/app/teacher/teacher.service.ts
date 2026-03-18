@@ -7,7 +7,7 @@ import { ITeacher } from './teacher.model';
   providedIn: 'root',
 })
 export class TeacherService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'http://localhost:5050/v1';
   schoolId: number = 0;
   standardId: number = 0;
   data: ITeacher[] = [];
@@ -33,9 +33,9 @@ export class TeacherService {
     );
   }
 
-  getByAdhaar(inTeacherAdhaar: string): Observable<ITeacher> {
+  getByUsername(inUsername: string): Observable<ITeacher> {
     return this.http.get<ITeacher>(
-      `${this.apiUrl}/teacher/adhaar/${inTeacherAdhaar}`,
+      `${this.apiUrl}/teacher/username/${inUsername}`,
       {
         headers: this.headers,
       }
