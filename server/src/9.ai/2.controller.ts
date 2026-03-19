@@ -179,4 +179,26 @@ export class ControllerAi extends BaseController {
   async getAllScores(@request() req: Request, @response() res: Response) {
     await this.proxyRequest(req, res, "/scores/all");
   }
+
+  // ─────────────────── Lesson Notes ───────────────────
+
+  @httpGet("/notes", aiLimiter, requireAuth)
+  async getNotes(@request() req: Request, @response() res: Response) {
+    await this.proxyRequest(req, res, "/notes");
+  }
+
+  @httpGet("/notes/pdf", aiLimiter, requireAuth)
+  async getNotesPdf(@request() req: Request, @response() res: Response) {
+    await this.proxyRequest(req, res, "/notes/pdf");
+  }
+
+  @httpPost("/notes/publish", aiLimiter, requireAuth)
+  async publishNotes(@request() req: Request, @response() res: Response) {
+    await this.proxyRequest(req, res, "/notes/publish", "POST", req.body);
+  }
+
+  @httpPost("/notes/regenerate", aiLimiter, requireAuth)
+  async regenerateNotes(@request() req: Request, @response() res: Response) {
+    await this.proxyRequest(req, res, "/notes/regenerate", "POST", req.body);
+  }
 }

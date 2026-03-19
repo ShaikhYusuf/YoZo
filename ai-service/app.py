@@ -31,6 +31,7 @@ from lib.lesson_short_question import MyLessonShortQuestion  # type: ignore
 from lib.lesson_truefalse import MyLessonTrueFalse  # type: ignore
 from lib.lesson_fillblank import MyLessonFillBlank  # type: ignore
 from lib.lesson_assistant import MyLessonAssistant  # type: ignore
+from lib.lesson_notes import MyLessonNotes  # type: ignore
 from lib.task_store import task_store, TaskStatus  # type: ignore
 
 import asyncio
@@ -135,6 +136,7 @@ def initialize_app():
         MyLessonTrueFalse,
         MyLessonFillBlank,
         MyLessonAssistant,
+        MyLessonNotes,
     ]
 
     for cls in classes_to_init:
@@ -314,6 +316,74 @@ def get_all_scores():
     except Exception as e:
         logger.exception("Error fetching scores")
         return error_response(str(e))
+
+
+# ================================================
+# Lesson Notes Routes
+# ================================================
+
+@app.route('/api/ai/notes', methods=['GET'])
+def get_lesson_notes():
+    """Generate or retrieve AI lesson notes for a given path."""
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonNotes.generate_response(path))
+    return success_response({"task_id": task_id}, "Notes generation started", 202)
+
+
+@app.route('/api/ai/notes/pdf', methods=['GET'])
+def get_notes_pdf():
+    """Serve the generated PDF file for a given notes path."""
+    from flask import send_file
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+
+    try:
+        notes = MyLessonNotes._read_notes_db(path)
+        if not notes or not notes.pdf_path:
+            return error_response("PDF not found for this path", 404)
+
+        if not os.path.exists(notes.pdf_path):
+            return error_response("PDF file missing from disk", 404)
+
+        safe_filename = path.replace("/", "_").replace("\\", "_") + "_notes.pdf"
+        return send_file(
+            notes.pdf_path,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=safe_filename,
+        )
+    except Exception as e:
+        logger.exception("Error serving PDF")
+        return error_response(str(e))
+
+
+@app.route('/api/ai/notes/publish', methods=['POST'])
+def publish_notes():
+    """Set notes status from draft → published."""
+    data = request.get_json()
+    if not data or not data.get('path'):
+        return error_response("path is required", 400)
+
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonNotes.publish_notes(data['path']))
+    return success_response({"task_id": task_id}, "Publish task started", 202)
+
+
+@app.route('/api/ai/notes/regenerate', methods=['POST'])
+def regenerate_notes():
+    """Delete existing notes and regenerate from scratch."""
+    data = request.get_json()
+    if not data or not data.get('path'):
+        return error_response("path is required", 400)
+
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonNotes.regenerate_notes(data['path']))
+    return success_response({"task_id": task_id}, "Regeneration started", 202)
 
 
 # ================================================
