@@ -16,7 +16,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
   template: `
     <div class="flex flex-col w-full">
       @if (label) {
-        <label class="mb-1.5 text-sm font-medium text-foreground tracking-tight">{{ label }}</label>
+        <label class="mb-1 text-sm font-medium text-foreground">{{ label }}</label>
       }
       <input
         [type]="type"
@@ -25,13 +25,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
         [(ngModel)]="value"
         (ngModelChange)="onValueChange($event)"
         (blur)="onTouched()"
-        [class]="'bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm ' + 
-                 'text-foreground outline-none transition-all duration-200 ' + 
-                 'focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted ' + 
-                 'disabled:opacity-50 disabled:cursor-not-allowed ' + class"
+        [class]="'w-full h-10 bg-surface border rounded-md px-4 text-base text-foreground outline-none transition-colors ' +
+                 (error ? 'border-danger focus-visible:ring-2 focus-visible:ring-danger/20 ' : 'border-border focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary ') +
+                 'placeholder:text-muted disabled:opacity-50 disabled:pointer-events-none ' + class"
       />
-      @if (hint) {
-        <span class="mt-1.5 text-xs text-muted">{{ hint }}</span>
+      @if (error) {
+        <span class="mt-1 text-sm text-danger">{{ error }}</span>
+      }
+      @if (hint && !error) {
+        <span class="mt-1 text-xs text-muted">{{ hint }}</span>
       }
     </div>
   `
@@ -39,6 +41,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
 export class InputComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() hint: string = '';
+  @Input() error: string = '';
   @Input() type: string = 'text';
   @Input() placeholder: string = '';
   @Input({ transform: booleanAttribute }) disabled: boolean = false;

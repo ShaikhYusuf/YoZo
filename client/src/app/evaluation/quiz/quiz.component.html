@@ -1,36 +1,79 @@
 <!-- Quiz Component -->
-<div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
-  <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-    <span class="text-lg font-semibold text-foreground tracking-tight">Quiz</span>
+<div class="bg-surface border border-border rounded-lg overflow-hidden">
+  <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+    <span class="text-lg font-semibold text-foreground">Quiz</span>
     <div class="flex gap-2">
-      <button (click)="readAloud()" *ngIf="!isReading" class="text-primary hover:text-primary-hover p-1.5 rounded-md hover:bg-primary-light transition-colors"><i class="fa-solid fa-volume-high"></i></button>
-      <button (click)="stopReading()" *ngIf="isReading" class="text-red-500 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors"><i class="fa-solid fa-stop"></i></button>
+      <button (click)="readAloud()" *ngIf="isStudent && !isReading && !isPaused" class="text-muted hover:text-foreground p-2 rounded-md hover:bg-surface-hover transition-colors" title="Read Aloud"><i class="fa-solid fa-volume-high"></i></button>
+      <button (click)="pauseReading()" *ngIf="isStudent && isReading && !isPaused" class="text-muted hover:text-foreground p-2 rounded-md hover:bg-surface-hover transition-colors" title="Pause Reading"><i class="fa-solid fa-pause"></i></button>
+      <button (click)="resumeReading()" *ngIf="isStudent && isPaused" class="text-muted hover:text-foreground p-2 rounded-md hover:bg-surface-hover transition-colors" title="Resume Reading"><i class="fa-solid fa-play"></i></button>
+      <button (click)="stopReading()" *ngIf="isStudent && (isReading || isPaused)" class="text-danger hover:text-danger p-2 rounded-md hover:bg-danger-light transition-colors" title="Stop Reading"><i class="fa-solid fa-stop"></i></button>
     </div>
   </div>
   <div class="p-6 space-y-6">
-    <div *ngFor="let eachQuiz of quizzes" class="p-4 bg-surface border border-surface-border rounded-lg">
-      <p class="font-medium text-foreground mb-3">{{ eachQuiz.question }}</p>
-      <div class="space-y-2">
-        <label *ngFor="let option of eachQuiz.options; let i = index" 
-          class="flex items-center gap-3 p-2.5 rounded-lg border cursor-pointer transition-all duration-200"
-          [ngClass]="{
-            'border-primary bg-primary-light': eachQuiz.selectedAnswer === i && !eachQuiz.answered,
-            'border-green-400 bg-green-50': eachQuiz.answered && i === eachQuiz.answer,
-            'border-red-400 bg-red-50': eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer,
-            'border-surface-border hover:border-primary/50': eachQuiz.selectedAnswer !== i && !eachQuiz.answered
-          }">
-          <input type="radio" [name]="'quiz-' + eachQuiz.question" [value]="i" [(ngModel)]="eachQuiz.selectedAnswer" class="accent-primary" />
-          <span [ngClass]="{'text-green-700': eachQuiz.answered && i === eachQuiz.answer, 'text-red-700': eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer}">
-            {{ option }}
-          </span>
-          <i *ngIf="eachQuiz.answered && i === eachQuiz.answer" class="fa-solid fa-circle-check text-green-500 ml-auto"></i>
-          <i *ngIf="eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer" class="fa-solid fa-circle-xmark text-red-500 ml-auto"></i>
-        </label>
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="space-y-4">
+      <app-skeleton-loader type="heading"></app-skeleton-loader>
+      <app-skeleton-loader type="card" height="150px"></app-skeleton-loader>
+      <app-skeleton-loader type="card" height="150px"></app-skeleton-loader>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="isError" class="flex flex-col items-center justify-center py-10 text-center">
+      <div class="w-16 h-16 bg-danger-light text-danger rounded-full flex items-center justify-center mb-4 text-2xl">
+        <i class="fa-solid fa-circle-exclamation"></i>
       </div>
+      <h3 class="text-lg font-semibold text-foreground mb-2">Evaluation generation failed</h3>
+      <p class="text-muted mb-6 max-w-sm">{{ errorMessage }}</p>
+      <button (click)="retry()" class="h-10 bg-primary text-white font-medium px-6 rounded-md transition-colors hover:bg-primary-hover flex items-center gap-2">
+        <i class="fa-solid fa-rotate-right"></i>
+        Retry Evaluation
+      </button>
     </div>
-    <div class="flex gap-3">
-      <button class="btn-brand" (click)="submitAnswers()" [disabled]="!isAnyQuizAttempted()">Submit</button>
-      <button class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover active:scale-95" (click)="resetQuiz()">Reset</button>
+
+    <!-- Empty/No Data State -->
+    <div *ngIf="!isLoading && !isError && quizzes.length === 0" class="flex flex-col items-center justify-center py-10 text-center text-muted">
+       <i class="fa-solid fa-file-circle-question text-4xl mb-3"></i>
+       <p>No quizzes available for this section.</p>
+       <button (click)="retry()" class="mt-4 text-primary font-medium hover:underline">Request New Quiz</button>
     </div>
+
+    <!-- Content State -->
+    <ng-container *ngIf="!isLoading && !isError && quizzes.length > 0">
+      <div *ngFor="let eachQuiz of quizzes; let quizIndex = index" class="p-4 bg-surface border border-border rounded-lg">
+        <div class="flex items-start justify-between mb-3 gap-4">
+          <p class="font-medium text-foreground">{{ eachQuiz.question }}</p>
+          <button *ngIf="isStudent" 
+            (click)="startListening(quizIndex)" 
+            [class.animate-pulse]="isListeningToQuestion === quizIndex" 
+            [class.text-danger]="isListeningToQuestion === quizIndex" 
+            [class.text-muted]="isListeningToQuestion !== quizIndex" 
+            class="p-2 rounded-md hover:bg-surface-hover transition-colors focus-visible:outline-none flex-shrink-0" 
+            title="Answer by Voice">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+        </div>
+        <div class="space-y-2">
+          <label *ngFor="let option of eachQuiz.options; let i = index"
+            class="flex items-center gap-3 p-2 rounded-md border cursor-pointer transition-colors"
+            [ngClass]="{
+              'border-primary bg-primary-light': eachQuiz.selectedAnswer === i && !eachQuiz.answered,
+              'border-success-border bg-success-light': eachQuiz.answered && i === eachQuiz.answer,
+              'border-danger-border bg-danger-light': eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer,
+              'border-border hover:border-primary/50': eachQuiz.selectedAnswer !== i && !eachQuiz.answered
+            }">
+            <input type="radio" [name]="'quiz-' + eachQuiz.question" [value]="i" [(ngModel)]="eachQuiz.selectedAnswer" class="accent-primary" />
+            <span [ngClass]="{'text-success': eachQuiz.answered && i === eachQuiz.answer, 'text-danger': eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer}">
+              {{ option }}
+            </span>
+            <i *ngIf="eachQuiz.answered && i === eachQuiz.answer" class="fa-solid fa-circle-check text-success ml-auto"></i>
+            <i *ngIf="eachQuiz.answered && i === eachQuiz.selectedAnswer && i !== eachQuiz.answer" class="fa-solid fa-circle-xmark text-danger ml-auto"></i>
+          </label>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button class="h-10 bg-primary text-white font-medium px-6 rounded-md transition-colors hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none" (click)="submitAnswers()" [disabled]="!isAnyQuizAttempted()">Submit</button>
+        <button class="h-10 text-muted hover:text-foreground font-medium px-4 rounded-md transition-colors hover:bg-surface-hover" (click)="resetQuiz()">Reset</button>
+      </div>
+    </ng-container>
   </div>
 </div>

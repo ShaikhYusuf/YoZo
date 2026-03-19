@@ -45,7 +45,7 @@ export class AITaskService {
         const tasks = new Map(this.activeTasks());
         tasks.delete(update.taskId);
         this.activeTasks.set(tasks);
-      }, 2000); // Keep for 2s for UI to show success/fail
+      }, 60000); // Keep for 60s for UI to show success/fail
     }
   }
 

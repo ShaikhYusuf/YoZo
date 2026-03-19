@@ -64,36 +64,50 @@ export class StudentDashboardComponent {
     private serviceHelper: DashboardServiceHelper,
     private gamificationService: GamificationService,
     private studentService: StudentService
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    console.log('STUDENT_DASHBOARD: Component Starting OnInit');
+    
     this.route.params.subscribe((params) => {
       this.schoolId = +params['schoolId'];
       this.standardId = +params['standardId'];
       this.studentId = +params['studentId'];
+
+      console.log('STUDENT_DASHBOARD: IDs Resolved:', { school: this.schoolId, standard: this.standardId, student: this.studentId });
+
+      if (isNaN(this.schoolId) || isNaN(this.standardId) || isNaN(this.studentId)) {
+        console.error('STUDENT_DASHBOARD: Invalid route parameters received');
+        return;
+      }
+
+      this.loadDashboardData();
     });
   }
 
-  ngOnInit(): void {
-    console.log('STUDENT_DASHBOARD: Component Starting OnInit');
-    console.log('STUDENT_DASHBOARD: Route Params Initialized:', { schoolId: this.schoolId, standardId: this.standardId, studentId: this.studentId });
+  private loadDashboardData(): void {
+    console.log('STUDENT_DASHBOARD: Starting loadDashboardData sequence');
     
+    // Fetch Student Profile
     this.studentService.get(this.studentId).subscribe({
       next: (student: IStudent) => {
-        console.log('STUDENT_DASHBOARD: Student Profile Fetched:', student.name);
         this.studentName = student.name;
       },
       error: (err) => console.error('STUDENT_DASHBOARD: Error fetching student profile:', err)
     });
 
-    console.log('STUDENT_DASHBOARD: Calling initializeDashboardData');
+    // Initialize Curriculum and Progress
     this.serviceHelper.initializeDashboardData(this.schoolId).subscribe({
       next: () => {
-        console.log('STUDENT_DASHBOARD: Curriculum Data Initialized successfully');
+        console.log('STUDENT_DASHBOARD: Curriculum Data loaded into Helper');
+        
         this.progressService
           .getAllStudent(this.schoolId, this.standardId, this.studentId)
           .subscribe({
             next: (progressData) => {
-              console.log('STUDENT_DASHBOARD: Progress Data Received:', progressData ? progressData.length : 0);
+              console.log('STUDENT_DASHBOARD: Student Progress loaded:', progressData?.length ?? 0);
               if (!progressData) progressData = [];
+              
               this.perfOverall = this.serviceHelper.getOverallPerformance(progressData);
               this.perfOverallPlotter = new BarPlotter(
                 [this.perfOverall],
@@ -101,108 +115,115 @@ export class StudentDashboardComponent {
                 'Overall Performance'
               );
 
-              // Build subject data from ALL subjects in the student's standard
-              this.subjectData = this.serviceHelper.subjects
-                .filter((s) => Number(s.standard) === Number(this.standardId))
-                .map((s) => {
-                  const subjectProgress = progressData.filter((p) => Number(p.subject) === Number(s.Id));
-                  
-                  // Map Lessons for this subject
-                  const lessons: IChildNode[] = this.serviceHelper.lessons
-                    .filter((l) => Number(l.subject) === Number(s.Id))
-                    .map((l) => {
-                      const lessonProgress = subjectProgress.filter((p) => Number(p.lesson) === Number(l.Id));
-                      
-                      // Map Lesson Sections for this lesson
-                      const sections: IChildNode[] = this.serviceHelper.lessonsections
-                        .filter((ls) => Number(ls.lesson) === Number(l.Id))
-                        .map((ls) => {
-                          const sectionProgress = lessonProgress.find((p) => Number(p.lessonsection) === Number(ls.Id));
-                          const score = sectionProgress ? (sectionProgress.quiz + sectionProgress.fillblanks + sectionProgress.truefalse) / 3 : 0;
-                          
-                          return {
-                            Id: ls.Id!,
-                            name: ls.name!,
-                            score: score,
-                            expanded: false
-                          };
-                        });
-
-                      const lessonScore = sections.length > 0 
-                        ? sections.reduce((sum, sec) => sum + sec.score, 0) / sections.length 
-                        : 0;
-
-                      return {
-                        Id: l.Id!,
-                        name: l.name!,
-                        score: lessonScore,
-                        expanded: false,
-                        childList: sections
-                      };
-                    });
-
-                  const subjectScore = lessons.length > 0
-                    ? lessons.reduce((sum, les) => sum + les.score, 0) / lessons.length
-                    : 0;
-
-                  return {
-                    Id: s.Id!,
-                    name: s.name!,
-                    score: subjectScore,
-                    expanded: false,
-                    childList: lessons
-                  };
-                });
-
-              this.completedLessonSectionData = this.filterSubjectData(
-                this.subjectData,
-                (lessonSection) => lessonSection.score === 100
-              );
-
-              this.pendingLessonSectionData = this.filterSubjectData(
-                this.subjectData,
-                (lessonSection) => lessonSection.score < 100
-              );
-
-              let copiedSubjectData: IChildNode[] = JSON.parse(
-                JSON.stringify(this.pendingLessonSectionData)
-              );
-              this.nextLessonSectionData = copiedSubjectData.map(
-                (eachSubject) => {
-                  let firstLesson = eachSubject.childList?.slice(0, 1);
-                  if (firstLesson && firstLesson?.length > 0) {
-                    let firstLessonSection = firstLesson[0].childList?.slice(0, 1);
-                    firstLesson[0].childList = firstLessonSection;
-                  }
-                  eachSubject.childList = firstLesson;
-
-                  return eachSubject;
-                }
-              );
+              this.processCurriculum(progressData);
             },
             error: (err) => {
-              console.error('Error loading progress data:', err);
+              console.error('STUDENT_DASHBOARD: Error loading progress data:', err);
+              // Fallback to empty progress
+              this.processCurriculum([]);
             },
           });
 
+        // Gamification
         this.gamificationService
           .getStudentProfile(this.studentId)
           .subscribe({
             next: (profile) => {
-              if (profile) {
-                this.gamificationProfile = profile;
-              }
+              if (profile) this.gamificationProfile = profile;
             },
-            error: (err) => {
-              console.warn('Error loading gamification profile:', err);
-            },
+            error: (err) => console.warn('STUDENT_DASHBOARD: Error loading gamification stats:', err),
           });
       },
       error: (err) => {
-        console.error('Error initializing dashboard curriculum data:', err);
+        console.error('STUDENT_DASHBOARD: Failed to initialize curriculum tree:', err);
       },
     });
   }
+
+  private processCurriculum(progressData: IProgress[]): void {
+    // Build subject data from ALL subjects in the student's standard
+    this.subjectData = this.serviceHelper.subjects
+      .filter((s) => Number(s.standard) === Number(this.standardId))
+      .map((s) => {
+        const subjectProgress = progressData.filter((p) => Number(p.subject) === Number(s.Id));
+        
+        const lessons: IChildNode[] = this.serviceHelper.lessons
+          .filter((l) => Number(l.subject) === Number(s.Id))
+          .map((l) => {
+            const lessonProgress = subjectProgress.filter((p) => Number(p.lesson) === Number(l.Id));
+            
+            const sections: IChildNode[] = this.serviceHelper.lessonsections
+              .filter((ls) => Number(ls.lesson) === Number(l.Id))
+              .map((ls) => {
+                const sectionProgress = lessonProgress.find((p) => Number(p.lessonsection) === Number(ls.Id));
+                const score = sectionProgress ? (sectionProgress.quiz + sectionProgress.fillblanks + sectionProgress.truefalse) / 3 : 0;
+                
+                return {
+                  Id: ls.Id!,
+                  name: ls.name!,
+                  score: Math.round(score),
+                  expanded: false
+                };
+              });
+
+            const lessonScore = sections.length > 0 
+              ? sections.reduce((sum, sec) => sum + sec.score, 0) / sections.length 
+              : 0;
+
+            return {
+              Id: l.Id!,
+              name: l.name!,
+              score: Math.round(lessonScore),
+              expanded: false,
+              childList: sections
+            };
+          });
+
+        const subjectScore = lessons.length > 0
+          ? lessons.reduce((sum, les) => sum + les.score, 0) / lessons.length
+          : 0;
+
+        return {
+          Id: s.Id!,
+          name: s.name!,
+          score: Math.round(subjectScore),
+          expanded: false,
+          childList: lessons
+        };
+      });
+
+    // UX Enhancement: Auto-expand the first subject if available
+    if (this.subjectData.length > 0) {
+      this.subjectData[0].expanded = true;
+    }
+
+    this.completedLessonSectionData = this.filterSubjectData(
+      this.subjectData,
+      (lessonSection) => lessonSection.score === 100
+    );
+
+    this.pendingLessonSectionData = this.filterSubjectData(
+      this.subjectData,
+      (lessonSection) => lessonSection.score < 100
+    );
+
+    let copiedSubjectData: IChildNode[] = JSON.parse(
+      JSON.stringify(this.pendingLessonSectionData)
+    );
+    this.nextLessonSectionData = copiedSubjectData.map(
+      (eachSubject) => {
+        let firstLesson = eachSubject.childList?.slice(0, 1);
+        if (firstLesson && firstLesson?.length > 0) {
+          let firstLessonSection = firstLesson[0].childList?.slice(0, 1);
+          firstLesson[0].childList = firstLessonSection;
+        }
+        eachSubject.childList = firstLesson;
+
+        return eachSubject;
+      }
+    );
+  }
+
 
   private filterSubjectData(
     subjectData: IChildNode[],

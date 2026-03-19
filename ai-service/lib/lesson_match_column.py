@@ -110,30 +110,32 @@ class MyLessonMatchColumn():
         # Store raw lists. JSONB preserves index order.
         values = (path, json.dumps(data.column_a), json.dumps(data.column_b))
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print(f"Error: Database connection not initialized for {path}")
             return
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(create_table_query)
                 cur.execute(upsert_query, values)
-                cls.conn.commit()
+                conn.commit()
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print(f"Error saving quiz: {e}")
 
     @classmethod
     def read_from_db(cls, path: str) -> Optional[MatchingMatchColumns]:
         query = f"SELECT column_a, column_b FROM {cls.table_name} WHERE path = %s"
         
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print(f"Error: Database connection not initialized for {path}")
-            return
+            return None
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (path,))
                 row = cur.fetchone()
                 if not row: return None

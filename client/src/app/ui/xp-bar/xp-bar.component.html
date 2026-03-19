@@ -1,24 +1,23 @@
-<div class="w-full flex flex-col gap-1.5 pt-2">
+<div class="w-full flex flex-col gap-2 pt-2">
   <div *ngIf="showLabel" class="flex justify-between items-end mb-1">
     <div class="flex items-center gap-2">
-      <div class="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/30 shadow-glow-sm">
-        <i class="fa-solid fa-star text-[10px] text-amber-500"></i>
+      <div class="w-6 h-6 rounded-full bg-warning-light flex items-center justify-center border border-warning-border">
+        <i class="fa-solid fa-star text-xs text-warning"></i>
       </div>
-      <span class="text-sm font-bold text-foreground">Level {{ level }}</span>
+      <span class="text-sm font-semibold text-foreground">Level {{ level }}</span>
     </div>
     <span class="text-xs font-mono font-medium text-muted">
-      <span class="text-amber-500">{{ currentXp }}</span> / {{ maxXp }} XP
+      <span class="text-warning">{{ currentXp }}</span> / {{ maxXp }} XP
     </span>
   </div>
 
-  <div class="h-2.5 w-full bg-surface-hover rounded-full overflow-hidden border border-surface-border shadow-inner relative">
-    <!-- Animated fill bar -->
-    <div 
-      class="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full transition-all duration-1000 ease-out relative overflow-hidden shadow-glow-sm"
+  <div class="h-2 w-full bg-surface-hover rounded-full overflow-hidden border border-border">
+    <div
+      class="h-full bg-warning rounded-full transition-all relative overflow-hidden"
       [style.width.%]="animatedWidth"
+      style="transition-duration: 1s; transition-timing-function: ease-out;"
     >
-      <!-- Subtle internal shine animation passing over the bar -->
-      <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+      <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-shimmer"></div>
     </div>
   </div>
 </div>

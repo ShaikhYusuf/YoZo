@@ -10,12 +10,14 @@ import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ILoginDetail, roleList } from './logindetail.model';
 import { LoginDetailService } from './logindetail.service';
+import { BadgeComponent } from '../ui/badge/badge.component';
 
 @Component({
   selector: 'app-logindetail',
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    BadgeComponent,
   ],
   templateUrl: './logindetail.component.html',
   styleUrls: ['./logindetail.component.css'],

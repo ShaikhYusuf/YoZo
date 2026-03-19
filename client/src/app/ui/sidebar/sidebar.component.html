@@ -1,51 +1,54 @@
-<div 
-  class="h-screen sticky top-0 bg-surface/80 backdrop-blur-md border-r border-surface-border transition-all duration-300 flex flex-col z-40"
-  [class.w-64]="!isCollapsed"
-  [class.w-20]="isCollapsed"
+<div
+  class="h-screen sticky top-0 bg-surface border-r border-border transition-all flex flex-col z-sticky"
+  [class.w-16]="isCollapsed"
+  [class.w-14]="false"
+  [style.width]="isCollapsed ? '64px' : '240px'"
 >
   <!-- Logo Header -->
-  <div class="h-16 flex items-center justify-between border-b border-surface-border px-4 flex-shrink-0">
-    <div class="flex items-center gap-3 overflow-hidden whitespace-nowrap" [class.opacity-0]="isCollapsed" [class.w-0]="isCollapsed" class="transition-all duration-300">
-      <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+  <div class="h-14 flex items-center justify-between border-b border-border px-4 flex-shrink-0">
+    <div
+      class="flex items-center gap-3 overflow-hidden whitespace-nowrap transition-opacity"
+      [class.opacity-0]="isCollapsed"
+      [class.pointer-events-none]="isCollapsed"
+    >
+      <div class="w-8 h-8 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
         <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
       </div>
-      <span class="font-bold text-lg tracking-tight text-foreground">YoZo</span>
+      <span class="font-semibold text-lg text-foreground">YoZo</span>
     </div>
-    
-    <button 
-      (click)="toggleSidebar()" 
-      class="w-10 h-10 rounded-lg flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors absolute right-4"
+
+    <button
+      (click)="toggleSidebar()"
+      class="w-10 h-10 rounded-md flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
     >
       <i class="fa-solid" [ngClass]="isCollapsed ? 'fa-angle-right' : 'fa-angle-left'"></i>
     </button>
   </div>
 
   <!-- Navigation Links -->
-  <div class="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto overflow-x-hidden scrollbar-hide">
-    <a 
-      *ngFor="let item of navItems" 
+  <div class="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
+    <a
+      *ngFor="let item of navItems()"
       [routerLink]="item.route"
-      class="group flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-200 cursor-pointer relative"
-      [class.opacity-100]="isActive(item.route)"
-      [class.opacity-70]="!isActive(item.route)"
-      [class.hover:opacity-100]="!isActive(item.route)"
+      class="group flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors relative"
       [class.bg-primary-light]="isActive(item.route)"
       [class.text-primary]="isActive(item.route)"
       [class.text-muted]="!isActive(item.route)"
       [class.hover:bg-surface-hover]="!isActive(item.route)"
+      [class.hover:text-foreground]="!isActive(item.route)"
       title="{{ isCollapsed ? item.label : '' }}"
     >
       <!-- Active Indicator Bar -->
-      <div *ngIf="isActive(item.route)" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full"></div>
-      
-      <div class="w-6 flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid {{ item.icon }} text-[18px]"></i>
+      <div *ngIf="isActive(item.route)" class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r-full"></div>
+
+      <div class="w-6 flex items-center justify-center flex-shrink-0" *ngIf="item.icon">
+        <i class="fa-solid {{ item.icon }} text-base"></i>
       </div>
-      
-      <span 
-        class="whitespace-nowrap transition-all duration-300 text-sm"
-        [class.opacity-0]="isCollapsed" 
-        [class.w-0]="isCollapsed"
+
+      <span
+        class="whitespace-nowrap transition-opacity text-sm"
+        [class.opacity-0]="isCollapsed"
+        [class.pointer-events-none]="isCollapsed"
       >
         {{ item.label }}
       </span>
@@ -53,19 +56,18 @@
   </div>
 
   <!-- Footer Actions (Logout) -->
-  <div class="p-4 border-t border-surface-border flex-shrink-0">
-    <button 
+  <div class="p-4 border-t border-border flex-shrink-0">
+    <button
       (click)="logout()"
-      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-red-500/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+      class="w-full flex items-center gap-3 px-3 py-2 rounded-md font-medium text-danger hover:bg-danger-light transition-colors"
       title="{{ isCollapsed ? 'Logout' : '' }}"
     >
       <div class="w-6 flex items-center justify-center flex-shrink-0">
-        <i class="fa-solid fa-arrow-right-from-bracket text-[18px]"></i>
+        <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
       </div>
-      <span 
-        class="whitespace-nowrap transition-opacity duration-300 text-sm"
-        [class.opacity-0]="isCollapsed" 
-        [class.w-0]="isCollapsed"
+      <span
+        class="whitespace-nowrap transition-opacity text-sm"
+        [class.opacity-0]="isCollapsed"
         [class.hidden]="isCollapsed"
       >
         Logout

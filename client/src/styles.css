@@ -1,80 +1,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import './tokens.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: #FAFAFA; /* Off-white, extremely clean */
-    --foreground: #171717; /* Near black text */
-    --surface: #FFFFFF;
-    --surface-hover: #F5F5F5;
-    --surface-border: #E5E5E5;
-    --muted: #737373;
-  }
-
-  /* Dark mode support later */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #0A0A0A; /* Deep slate/black */
-      --foreground: #EDEDED;
-      --surface: #171717;
-      --surface-hover: #262626;
-      --surface-border: #333333;
-      --muted: #A3A3A3;
-    }
-  }
-
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    letter-spacing: -0.01em; /* Slight tracking reduction for premium feel */
+    letter-spacing: -0.01em;
+    font-variant-ligatures: common-ligatures;
   }
 
-  /* Typography Hierarchy Overrides */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
+  }
+
+  /* Remove default focus outlines — we use focus-visible rings */
+  *:focus {
+    outline: none;
   }
 }
 
 @layer components {
-  /* Headless/Custom UI Tokens */
-  .glass-panel {
-    @apply bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl;
+  /* ── Skeleton Loader ── */
+  .skeleton {
+    @apply bg-surface-hover rounded-md animate-pulse;
   }
-  
-  .btn-primary {
-    @apply bg-primary text-white font-medium px-4 py-2 rounded-lg 
-           transition-all duration-200 
-           hover:bg-primary-hover hover:shadow-glow 
-           active:scale-95;
+
+  /* ── Scrollbar Hide ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-  
-  .btn-secondary {
-    @apply bg-surface text-foreground font-medium px-4 py-2 rounded-lg
-           border border-surface-border
-           transition-all duration-200
-           hover:bg-surface-hover hover:shadow-subtle
-           active:scale-95;
-  }
-  
-  .input-premium {
-    @apply bg-surface border border-surface-border rounded-lg px-4 py-2
-           text-foreground outline-none transition-all duration-200
-           focus:border-primary focus:ring-2 focus:ring-primary/20;
-  }
-  
-  /* Brand Specific Components from Test */
-  .btn-brand {
-    @apply bg-gradient-to-br from-brand-indigo to-brand-rose text-white font-medium px-4 py-2 rounded-lg 
-           transition-all duration-300 
-           hover:shadow-[0_4px_15px_rgba(215,109,119,0.3)] hover:-translate-y-0.5 hover:opacity-95
-           active:scale-95 disabled:from-[#9c8cb1] disabled:to-[#e0b1b8] disabled:shadow-none disabled:transform-none;
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
 
-@layer utilities {
-  .bg-brand-gradient {
-    @apply bg-gradient-to-br from-brand-indigo via-brand-rose to-brand-peach bg-[length:400%_400%];
-  }
+/* ── Animations ── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%, 75% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(0) scaleX(0); }
+  40% { transform: translateX(0) scaleX(0.4); }
+  100% { transform: translateX(100%) scaleX(0.5); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

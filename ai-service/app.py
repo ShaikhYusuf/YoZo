@@ -216,12 +216,18 @@ def get_task_status(task_id):
     if not task:
         return error_response("Task not found", 404)
     
+    # Create a copy for response
+    response_data = task.copy()
+    result = response_data.get("result")
+    
     # Process Pydantic models in result if they exist
-    result = task.get("result")
-    if result and hasattr(result, "model_dump"):
-        task["result"] = result.model_dump()
-        
-    return success_response(task, "Task status fetched")
+    if result:
+        if hasattr(result, "model_dump"):
+            response_data["result"] = result.model_dump()
+        elif isinstance(result, list):
+            response_data["result"] = [r.model_dump() if hasattr(r, "model_dump") else r for r in result]
+            
+    return success_response(response_data, "Task status fetched")
 
 
 @app.route('/api/ai/chat', methods=['POST'])

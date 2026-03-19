@@ -1,13 +1,17 @@
 import json
+import logging
+import time
 import numpy as np
-from typing import Any
+from typing import Any, List, Optional
 from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.exceptions import OutputParserException
 from langchain_core.prompts import PromptTemplate
 
 from lib.utility import Utility
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 #------------------- True/False Quiz Template ------------------#
 TF_QUIZ_PROMPT_TEMPLATE = """
@@ -56,8 +60,8 @@ class TrueFalseSet(BaseModel):
     @field_validator('questions')
     @classmethod
     def check_count(cls, v):
-        if len(v) < 5:
-            raise ValueError("The set must contain at least 5 questions.")
+        if len(v) < 1:
+            raise ValueError("The set must contain at least 1 question.")
         return v
 
 class MyLessonTrueFalse():
@@ -69,6 +73,58 @@ class MyLessonTrueFalse():
     def initialize(cls, llm, conn):
         cls.llm = llm
         cls.conn = conn
+
+    @classmethod
+    def sanitize(cls, raw: Any) -> Any:
+        if not isinstance(raw, dict):
+            return raw
+
+        # 1. Handle Case where LLM returns a single object instead of a wrapper with "questions": []
+        if "questions" not in raw:
+            if "question" in raw:
+                logger.info("Sanitizer: Detected single T/F object, wrapping in 'questions' list.")
+                raw = {"questions": [raw]}
+            else:
+                for k, v in raw.items():
+                    if isinstance(v, list) and len(v) > 0 and isinstance(v[0], dict) and "question" in v[0]:
+                        logger.info(f"Sanitizer: Found T/F questions in key '{k}', remapping to 'questions'.")
+                        raw = {"questions": v}
+                        break
+        
+        # 2. Handle Case where 'questions' is a single dict
+        if "questions" in raw and isinstance(raw["questions"], dict):
+            logger.info("Sanitizer: 'questions' field is a dict, wrapping in list.")
+            raw["questions"] = [raw["questions"]]
+
+        if "questions" not in raw or not isinstance(raw["questions"], list):
+            return raw
+
+        cleaned = []
+        for q in raw["questions"]:
+            if not isinstance(q, dict) or "question" not in q: continue
+            
+            # Ensure required fields
+            if "answer" not in q: q["answer"] = "True"
+            if q["answer"] not in ["True", "False"]:
+                q["answer"] = "True" if "true" in str(q["answer"]).lower() else "False"
+            
+            q["options"] = ["True", "False"]
+            cleaned.append(q)
+            
+        raw["questions"] = cleaned
+        return raw
+
+    @staticmethod
+    def _extract_json_from_error(e: Exception) -> Optional[dict]:
+        text = str(e)
+        import re
+        m = re.search(r"(\{.*?\})", text, re.DOTALL)
+        if not m: m = re.search(r"(\{.*\})", text, re.DOTALL)
+        if not m: return None
+        try:
+            return json.loads(m.group(1))
+        except:
+            return None
 
     @classmethod
     async def generate_contents(cls, path, input_content_text) -> TrueFalseSet:
@@ -84,26 +140,40 @@ class MyLessonTrueFalse():
 
         max_attempts = 3
         response: Any = None
+        start_time = time.time()
+        
+        logger.info(f"START generation for true/false: {path}")
+        
         for attempt in range(1, max_attempts + 1):
             try:
+                logger.info(f"Generation attempt {attempt}/{max_attempts} for path: {path}")
                 response = chain.invoke({"paragraph": input_content_text})
                 break
             except OutputParserException as e:
-                # If the model produced fewer than the required number of questions,
-                # retry with stronger instructions.
-                if "must contain at least 5 questions" in str(e) and attempt < max_attempts:
-                    reinforced_template = TF_QUIZ_PROMPT_TEMPLATE + "\n\nIMPORTANT: Your response MUST include exactly 5 questions in the 'questions' list."
-                    prompt = PromptTemplate(
-                        template=reinforced_template,
-                        input_variables=["paragraph"],
-                        partial_variables={"format_instructions": parser.get_format_instructions()}
-                    )
-                    chain = prompt | cls.llm | parser
-                    continue
-                raise
+                logger.warning(f"Output parsing failed on attempt {attempt}: {e}")
+                
+                raw_json = cls._extract_json_from_error(e)
+                if raw_json:
+                    logger.info(f"Attempting to sanitize and recover from: {raw_json}")
+                    sanitized_json = cls.sanitize(raw_json)
+                    try:
+                        response = TrueFalseSet(**sanitized_json)
+                        logger.info("Recovery SUCCESSFUL.")
+                        break
+                    except Exception as rex:
+                        logger.error(f"Recovery failed: {rex}")
+                        pass
 
-        if response is None or not hasattr(response, 'questions'):
-            raise RuntimeError("Failed to generate true/false questions after multiple attempts.")
+                if attempt == max_attempts:
+                    logger.error(f"Max attempts reached. Failed to parse true/false for {path}")
+                    raise
+
+        duration = time.time() - start_time
+        logger.info(f"END generation for true/false: {path} | Duration: {duration:.2f}s")
+
+        if response is None or not hasattr(response, 'questions') or response.questions is None or len(response.questions) == 0:
+            logger.error(f"Strict validation FAILED for {path}: Result is empty or malformed.")
+            raise RuntimeError("Generated true/false questions are empty or malformed.")
 
         for question in (response.questions or []):
             embeddings = Utility.convert_text_to_embedding(question.answer)
@@ -120,17 +190,19 @@ class MyLessonTrueFalse():
     async def generate_response(cls, path) -> Optional[TrueFalseSet]:
         from lib.lesson_store import MyLessonStore
         
+        logger.info(f"Checking cache for true/false: {path}")
         true_false_set = cls.read_from_db(path)
         if true_false_set:
+            logger.info(f"Cache HIT for true/false: {path}")
             return true_false_set 
             
+        logger.info(f"Cache MISS for true/false: {path}. Proceeding to generation.")
         # If missing, try to generate it using base content from lesson_sections
         section = MyLessonStore.read_section_db(path)
         if section and section.content:
-            print(f"On-demand generation triggered for true/false: {path}")
             return await cls.generate_contents(path, section.content)
             
-        return None 
+        raise RuntimeError(f"Base lesson content not found or empty for path/ID: {path}. Cannot generate true/false questions.")
 
     @classmethod
     def insert_data_db(cls, path: str, data: TrueFalseSet):
@@ -157,31 +229,33 @@ class MyLessonTrueFalse():
         # Using json.dumps ensures the float precision is handled correctly for JSONB
         values = (path, json.dumps(questions_data))
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print(f"Error: Database connection not initialized for True/False: {path}")
             return
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(create_table_query)
                 cur.execute(upsert_query, values)
-                cls.conn.commit()
+                conn.commit()
                 print(f"Successfully saved True/False questions: {path}")
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print(f"Error saving True/False: {e}")
 
     @classmethod
     def read_from_db(cls, path: str) -> Optional[TrueFalseSet]:
         query = f"SELECT questions_json FROM {cls.table_name} WHERE path = %s"
         
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print(f"Error: Database connection not initialized for True/False read: {path}")
             return None
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (path,))
                 row = cur.fetchone()
                 

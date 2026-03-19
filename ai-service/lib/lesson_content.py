@@ -1,4 +1,5 @@
 import logging
+import time
 from pydantic import BaseModel, Field, field_validator
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,43 @@ class MyLessonContent():
         cls.conn = conn
 
     @classmethod
+    def sanitize(cls, raw: Any) -> Any:
+        if not isinstance(raw, dict):
+            return raw
+
+        # Ensure summary and examples are lists
+        for field in ["summary", "examples"]:
+            if field in raw and not isinstance(raw[field], list):
+                if isinstance(raw[field], str):
+                    raw[field] = [s.strip() for s in raw[field].split("\n") if s.strip()]
+                else:
+                    raw[field] = [str(raw[field])]
+        
+        if "explanation" not in raw:
+            raw["explanation"] = "Explanation generation failed. Please try again."
+        
+        if "summary" not in raw: raw["summary"] = []
+        if "examples" not in raw: raw["examples"] = []
+            
+        return raw
+
+    @staticmethod
+    def _extract_json_from_error(e: Exception) -> Optional[dict]:
+        import re
+        import json
+        text = str(e)
+        # Match the JSON object within the error message
+        m = re.search(r"(\{.*?\})", text, re.DOTALL)
+        if not m:
+            m = re.search(r"(\{.*\})", text, re.DOTALL)
+        
+        if not m: return None
+        try:
+            return json.loads(m.group(1))
+        except:
+            return None
+
+    @classmethod
     async def generate_contents(cls, path, input_content_text) -> LessonContent:
         parser = PydanticOutputParser(pydantic_object=LessonContent)
         prompt = PromptTemplate(
@@ -58,28 +96,41 @@ class MyLessonContent():
 
         max_attempts = 3
         response = None
+        start_time = time.time()
+        
+        logger.info(f"START generation for lesson content: {path}")
+        
         for attempt in range(1, max_attempts + 1):
             try:
-                logger.info(f"LLM Invoke attempt {attempt} for path: {path}...")
+                logger.info(f"LLM Invoke attempt {attempt}/{max_attempts} for path: {path}...")
                 response = chain.invoke({"paragraph": input_content_text})
-                logger.info(f"LLM Invoke success for path: {path}.")
+                logger.info(f"LLM Invoke SUCCESS for path: {path}.")
                 break
             except OutputParserException as e:
-                # If the model produced fewer than the required number of questions,
-                # retry with stronger instructions.
-                if "must contain at least 5 questions" in str(e) and attempt < max_attempts:
-                    reinforced_template = CONTENT_PROMPT_TEMPLATE
-                    prompt = PromptTemplate(
-                        template=reinforced_template,
-                        input_variables=["paragraph"],
-                        partial_variables={"format_instructions": parser.get_format_instructions()}
-                    )
-                    chain = prompt | cls.llm | parser
-                    continue
-                raise
+                logger.warning(f"Output parsing failed on attempt {attempt}: {e}")
+                
+                raw_json = cls._extract_json_from_error(e)
+                if raw_json:
+                    logger.info(f"Attempting to sanitize and recover from: {raw_json}")
+                    sanitized_json = cls.sanitize(raw_json)
+                    try:
+                        response = LessonContent(**sanitized_json)
+                        logger.info("Recovery SUCCESSFUL.")
+                        break
+                    except Exception as rex:
+                        logger.error(f"Recovery failed: {rex}")
+                        pass
 
-        if response is None:
-            raise RuntimeError("Failed to generate lesson content after multiple attempts.")
+                if attempt == max_attempts:
+                    logger.error(f"Max attempts reached. Failed to parse lesson content for {path}")
+                    raise
+
+        duration = time.time() - start_time
+        logger.info(f"END generation for lesson content: {path} | Duration: {duration:.2f}s")
+
+        if response is None or not hasattr(response, 'explanation') or not response.explanation:
+            logger.error(f"Strict validation FAILED for {path}: Result is empty or malformed.")
+            raise RuntimeError("Generated lesson content is empty or malformed.")
 
         if response is not None:
             response.paragraph = input_content_text
@@ -100,20 +151,19 @@ class MyLessonContent():
     async def generate_response(cls, path: str) -> Optional[LessonContent]:
         from lib.lesson_store import MyLessonStore
         
-        logger.info(f"Generating AI response for path/ID: {path}")
+        logger.info(f"Checking cache for AI lesson content: {path}")
         content = cls.read_data_db(path)
         if content:
-            logger.info(f"Found existing AI content in DB for: {path}")
+            logger.info(f"Cache HIT for AI lesson content: {path}")
             return content
         
+        logger.info(f"Cache MISS for AI lesson content: {path}. Proceeding to generation.")
         # If missing, try to generate it using base content from lesson_sections
         section = MyLessonStore.read_section_db(path)
         if section and section.content:
-            logger.info(f"Source content found (length: {len(section.content)}). Triggering LLM generation for: {path}")
             return await cls.generate_contents(path, section.content)
             
-        logger.error(f"Failed to find source lesson content for: {path}. Cannot generate AI content.")
-        return None
+        raise RuntimeError(f"Base lesson content not found or empty for path/ID: {path}. Cannot generate explanation.")
 
     @classmethod
     def insert_data_db(cls, path: str, data: LessonContent):
@@ -150,31 +200,33 @@ class MyLessonContent():
             "\n".join(data.examples) if isinstance(data.examples, list) else data.examples
         )
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print(f"Error: Database connection not initialized for {path}")
             return
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(create_table_query)
                 cur.execute(upsert_query, values)
-                cls.conn.commit()
+                conn.commit()
                 print(f"Successfully processed (Upsert): {path}")
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print(f"Error processing {path}: {e}")
             
     @classmethod
     def read_data_db(cls, path: str) -> Optional[LessonContent]:
         query = f"SELECT paragraph, explanation, summary, examples FROM {cls.table_name} WHERE path = %s"
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print(f"Error: Database connection not initialized for {path}")
             return None
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (path,))
                 row = cur.fetchone()
 
@@ -191,4 +243,6 @@ class MyLessonContent():
                                 )    
         except Exception as e:
             print(f"Error reading {path}: {e}")
+            if cls.conn:
+                cls.conn.rollback()
             return None

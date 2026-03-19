@@ -21,7 +21,7 @@ export class LessonSectionService {
     inSubjectId: number,
     inLessonId: number
   ): Observable<ILessonSection[]> {
-    this.lessonId = inSubjectId;
+    this.lessonId = inLessonId;
     return this.http.get<ILessonSection[]>(
       `${this.apiUrl}/lessonsection/subject/${inSubjectId}/lesson/${inLessonId}?t=${new Date().getTime()}`,
       {

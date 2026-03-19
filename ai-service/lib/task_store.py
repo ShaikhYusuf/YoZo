@@ -24,7 +24,10 @@ class TaskStore:
             "result": None,
             "error": None,
             "created_at": time.time(),
-            "updated_at": time.time()
+            "updated_at": time.time(),
+            "start_time": None,
+            "end_time": None,
+            "duration": None
         }
         return task_id
 
@@ -50,6 +53,8 @@ class TaskStore:
             import inspect
             try:
                 logger.info(f"Task {task_id} status: RUNNING")
+                now = time.time()
+                self.tasks[task_id]["start_time"] = now
                 self.update_task(task_id, TaskStatus.RUNNING)
                 
                 # Check if it's an async function
@@ -58,11 +63,28 @@ class TaskStore:
                 else:
                     result = func(*args, **kwargs)
                 
-                logger.info(f"Task {task_id} status: COMPLETED")
+                finish = time.time()
+                duration = finish - self.tasks[task_id]["start_time"]
+                self.tasks[task_id]["end_time"] = finish
+                self.tasks[task_id]["duration"] = round(duration, 2)
+                
+                logger.info(f"Task {task_id} status: COMPLETED | Duration: {duration:.2f}s")
                 self.update_task(task_id, TaskStatus.COMPLETED, result=result)
             except Exception as e:
+                import traceback
+                finish = time.time()
+                duration = finish - (self.tasks[task_id].get("start_time") or finish)
+                self.tasks[task_id]["end_time"] = finish
+                self.tasks[task_id]["duration"] = round(duration, 2)
+                
+                error_details = {
+                    "message": str(e),
+                    "type": type(e).__name__,
+                    "traceback": traceback.format_exc()
+                }
+                
                 logger.error(f"Task {task_id} status: FAILED | Error: {str(e)}")
-                self.update_task(task_id, TaskStatus.FAILED, error=str(e))
+                self.update_task(task_id, TaskStatus.FAILED, result={"error": error_details}, error=str(e))
 
         thread = threading.Thread(target=wrapper)
         thread.start()

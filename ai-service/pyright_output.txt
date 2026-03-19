@@ -1,0 +1,6 @@
+d:\Yusuf-Clg\YoZo\ai-service\lib\lesson_assistant.py
+  d:\Yusuf-Clg\YoZo\ai-service\lib\lesson_assistant.py:83:27 - error: "raw_response" is possibly unbound (reportPossiblyUnboundVariable)
+  d:\Yusuf-Clg\YoZo\ai-service\lib\lesson_assistant.py:85:44 - error: "raw_response" is possibly unbound (reportPossiblyUnboundVariable)
+d:\Yusuf-Clg\YoZo\ai-service\lib\lesson_store.py
+  d:\Yusuf-Clg\YoZo\ai-service\lib\lesson_store.py:215:23 - error: "int_id" is possibly unbound (reportPossiblyUnboundVariable)
+3 errors, 0 warnings, 0 informations

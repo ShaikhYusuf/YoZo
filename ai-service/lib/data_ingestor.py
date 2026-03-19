@@ -5,6 +5,7 @@ class DataIngestor:
     def __init__(self, db_config):
         # Initialize DB connection
         self.conn = psycopg2.connect(**db_config)
+        self.conn.autocommit = True
 
         # Initialize Embedding Model (matches pgvector dimensions)
         # self.model = SentenceTransformer('all-MiniLM-L6-v2') 

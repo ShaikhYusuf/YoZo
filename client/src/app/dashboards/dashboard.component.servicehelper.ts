@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
+  catchError,
   filter,
   forkJoin,
   from,
   map,
   mergeMap,
+  of,
   switchMap,
   toArray,
 } from 'rxjs';
@@ -89,7 +91,7 @@ export class DashboardServiceHelper {
 
   private getStandards(schoolStandards: ISchoolStandard[]) {
     return from(schoolStandards).pipe(
-      mergeMap((standard) => this.standardService.getAll()),
+      mergeMap((standard) => this.standardService.getAll().pipe(catchError(() => of([])))),
       toArray(),
       map((standardLists) => standardLists.flat())
     );
@@ -97,7 +99,7 @@ export class DashboardServiceHelper {
 
   private getSubjects(schoolStandards: ISchoolStandard[]) {
     return from(schoolStandards).pipe(
-      mergeMap((standard) => this.subjectService.getAll(standard.standard!)),
+      mergeMap((standard) => this.subjectService.getAll(standard.standard!).pipe(catchError(() => of([])))),
       toArray(),
       map((subjectLists) => subjectLists.flat())
     );
@@ -106,7 +108,7 @@ export class DashboardServiceHelper {
   private getStudents(inSchoolId: number, schoolStandards: ISchoolStandard[]) {
     return from(schoolStandards).pipe(
       mergeMap((standard) =>
-        this.studentService.getAll(inSchoolId, standard.standard!)
+        this.studentService.getAll(inSchoolId, standard.standard!).pipe(catchError(() => of([])))
       ),
       toArray(),
       map((studentLists) => studentLists.flat())
@@ -115,7 +117,7 @@ export class DashboardServiceHelper {
 
   private getLessons(subjects: ISubject[]) {
     return from(subjects).pipe(
-      mergeMap((subject) => this.lessonService.getAll(subject.Id!)),
+      mergeMap((subject) => this.lessonService.getAll(subject.Id!).pipe(catchError(() => of([])))),
       toArray(),
       map((lessonLists) => lessonLists.flat())
     );
@@ -124,7 +126,7 @@ export class DashboardServiceHelper {
   private getLessonSections(lessons: ILesson[]) {
     return from(lessons).pipe(
       mergeMap((lessons) =>
-        this.lessonSectionService.getAll(lessons.subject!, lessons.Id!)
+        this.lessonSectionService.getAll(lessons.subject!, lessons.Id!).pipe(catchError(() => of([])))
       ),
       toArray(),
       map((lessonSectionList) => lessonSectionList.flat())

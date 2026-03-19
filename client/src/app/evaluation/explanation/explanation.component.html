@@ -1,55 +1,85 @@
 <div class="flex flex-col lg:flex-row gap-6 h-[80vh] w-full p-4">
   <!-- Explanation Column -->
-  <div class="flex-1 lg:w-[70%] flex flex-col bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-surface-border">
-      <span>Explanation</span>
-      <div>
-        <button (click)="readAloud()" *ngIf="!isReading" title="Read Aloud">
-          <i class="fa-solid fa-volume_up"></i>
+  <div class="flex-1 lg:w-[70%] flex flex-col bg-surface border border-border rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+      <span class="text-lg font-semibold text-foreground">Explanation</span>
+      <div class="flex gap-2">
+        <button (click)="readAloud()" *ngIf="isStudent && !isReading && !isPaused" title="Read Aloud" class="text-muted hover:text-foreground p-2 rounded-md hover:bg-surface-hover transition-colors">
+          <i class="fa-solid fa-volume-up"></i>
         </button>
-        <button (click)="stopReading()" *ngIf="isReading" title="Stop Reading">
+        <button (click)="pauseReading()" *ngIf="isStudent && isReading && !isPaused" title="Pause Reading" class="text-muted hover:text-foreground p-2 rounded-md hover:bg-surface-hover transition-colors">
+          <i class="fa-solid fa-pause"></i>
+        </button>
+        <button (click)="resumeReading()" *ngIf="isStudent && isPaused" title="Resume Reading" class="text-muted hover:text-foreground p-2 rounded-md hover:bg-surface-hover transition-colors">
+          <i class="fa-solid fa-play"></i>
+        </button>
+        <button (click)="stopReading()" *ngIf="isStudent && (isReading || isPaused)" title="Stop Reading" class="text-danger p-2 rounded-md hover:bg-danger-light transition-colors">
           <i class="fa-solid fa-stop"></i>
         </button>
       </div>
     </div>
     <div class="flex-1 p-6 min-h-0">
-      <div class="h-full bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden flex flex-col">
-        <div class="flex-1 overflow-auto p-4" [innerHTML]="explanationText"></div>
+      <div class="h-full bg-surface border border-border rounded-lg overflow-hidden flex flex-col">
+        <!-- Loading State -->
+        <div *ngIf="isContentLoading" class="p-6 space-y-4 overflow-auto">
+          <app-skeleton-loader type="heading"></app-skeleton-loader>
+          <app-skeleton-loader type="text"></app-skeleton-loader>
+          <app-skeleton-loader type="text"></app-skeleton-loader>
+          <app-skeleton-loader type="card" height="200px"></app-skeleton-loader>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="isContentError" class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <div class="w-16 h-16 bg-danger-light text-danger rounded-full flex items-center justify-center mb-4 text-2xl">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-foreground mb-2">Content generation failed</h3>
+          <p class="text-muted mb-6 max-w-sm">{{ errorMessage }}</p>
+          <button (click)="retry()" class="h-10 bg-primary text-white font-medium px-6 rounded-md transition-colors hover:bg-primary-hover flex items-center gap-2">
+            <i class="fa-solid fa-rotate-right"></i>
+            Retry
+          </button>
+        </div>
+
+        <!-- Content State -->
+        <div *ngIf="!isContentLoading && !isContentError" class="flex-1 overflow-auto p-4" [innerHTML]="explanationText"></div>
       </div>
     </div>
   </div>
 
   <!-- Chatbot Column -->
-  <div class="lg:w-[30%] flex flex-col bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-surface-border">Study Assistant</div>
+  <div class="lg:w-[30%] flex flex-col bg-surface border border-border rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-border text-lg font-semibold text-foreground">Study Assistant</div>
     <div class="flex-1 p-6 min-h-0">
       <div class="h-full overflow-auto space-y-4" #messagesContainer>
         <markdown [data]="responseText"></markdown>
       </div>
     </div>
-    <div class="px-6 py-4 border-t border-surface-border">
+    <div class="px-6 py-4 border-t border-border">
       <div class="flex items-center gap-3">
-        <div class="flex-1">
-          <input class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" [(ngModel)]="prompt"
-            placeholder="Ask a question..."
-            (keyup.enter)="sendQuestion()"
-            [disabled]="isLoading"
-           />
-        </div>
+        <button *ngIf="isStudent"
+          (click)="startListening()"
+          [class.animate-pulse]="isListening"
+          [class.text-danger]="isListening"
+          [class.text-muted]="!isListening"
+          class="h-10 px-3 hover:text-foreground transition-colors rounded-md hover:bg-surface-hover focus-visible:outline-none"
+          title="Voice Input">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <input class="flex-1 h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" [(ngModel)]="prompt"
+          placeholder="Ask a question..."
+          (keyup.enter)="sendQuestion()"
+          [disabled]="isLoading || isListening" />
         <button
-          class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="h-10 bg-primary text-white font-medium px-4 rounded-md transition-colors hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
           (click)="sendQuestion()"
-          [disabled]="!prompt"
-          class="input-send-button"
-        >
+          [disabled]="!prompt">
           Send
         </button>
         <button
-          class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="h-10 text-muted hover:text-foreground font-medium px-4 rounded-md transition-colors hover:bg-surface-hover"
           (click)="stopResponse()"
-          [disabled]="!prompt"
-          class="input-send-button"
-        >
+          [disabled]="!prompt">
           Stop
         </button>
       </div>

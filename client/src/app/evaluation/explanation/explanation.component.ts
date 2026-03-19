@@ -8,11 +8,13 @@ import { MarkdownModule } from 'ngx-markdown';
 import { convert } from 'html-to-text';
 import { VoiceService } from '../../voice/voice.service';
 import { AITaskService } from '../../common/ai-task.service';
+import { AuthService } from '../../common/auth.service';
+import { SkeletonLoaderComponent } from '../../ui/skeleton-loader/skeleton-loader.component';
 
 @Component({
   selector: 'app-explanation',
   imports: [
-    CommonModule,FormsModule,MarkdownModule],
+    CommonModule,FormsModule,MarkdownModule,SkeletonLoaderComponent],
   templateUrl: './explanation.component.html',
   styleUrls: ['./explanation.component.css'],
 })
@@ -29,50 +31,92 @@ export class ExplanationComponent implements OnInit {
   prompt: string = '';
   responseText: string = ''; // Store accumulated response
   response$?: Observable<string>; // Observable for streaming
-  isLoading: boolean = false;
+  isLoading: boolean = false; // For Chat
+  isContentLoading: boolean = false; // For main explanation
+  isContentError: boolean = false;
   errorMessage: string = '';
+  private currentTaskId: string | null = null;
 
   constructor(
     private sanitizer: DomSanitizer,
     private evaluationService: EvaluationService,
     private voiceService: VoiceService,
-    private aiTaskService: AITaskService
+    private aiTaskService: AITaskService,
+    private authService: AuthService
   ) {}
+
+  get isStudent() {
+    return this.authService.user().role === 'student';
+  }
 
   // Load the questions
   private load() {
-    this.evaluationService.getLessonExplanation(this.lessonsectionId).subscribe();
+    this.isContentLoading = true;
+    this.isContentError = false;
+    this.errorMessage = '';
+    this.explanation = '';
+    this.explanationText = '';
+
+    this.evaluationService.getLessonExplanation(this.lessonsectionId).subscribe({
+      next: (res: any) => {
+        if (res.data?.task_id) {
+          this.currentTaskId = res.data.task_id;
+        }
+      },
+      error: (err: any) => {
+        this.isContentLoading = false;
+        this.isContentError = true;
+        this.errorMessage = 'Failed to initiate content generation.';
+      }
+    });
     
     this.aiTaskService.getUpdates().subscribe((update: any) => {
-      if (update.path.includes('content') && update.path.includes(this.lessonsectionId.toString())) {
-        if (update.status === 'completed' && update.result) {
-          this.explanation = update.result.explanation;
-          
-          let fullContent = `<div>${update.result.explanation}</div>`;
-          
-          if (update.result.summary && update.result.summary.length > 0) {
-            fullContent += `<div class="mt-4"><h4 class="font-bold text-lg mb-2">Summary</h4><ul class="list-disc pl-5 space-y-1">`;
-            update.result.summary.forEach((s: string) => fullContent += `<li>${s}</li>`);
-            fullContent += `</ul></div>`;
-          }
-          
-          if (update.result.examples && update.result.examples.length > 0) {
-            fullContent += `<div class="mt-4"><h4 class="font-bold text-lg mb-2">Examples</h4><ul class="list-disc pl-5 space-y-1">`;
-            update.result.examples.forEach((e: string) => fullContent += `<li>${e}</li>`);
-            fullContent += `</ul></div>`;
-          }
-          
-          this.explanationText = this.sanitizer.bypassSecurityTrustHtml(fullContent);
-          
-          // Auto-trigger speech after a short delay to allow UI to render
-          setTimeout(() => {
-            if (this.explanation && !this.isReading) {
-              this.readAloud();
+      const isMatch = (this.currentTaskId && update.taskId === this.currentTaskId) || 
+                      (update.path.includes('content') && update.path.includes(this.lessonsectionId.toString()));
+
+      if (isMatch) {
+        if (update.status === 'completed') {
+          this.isContentLoading = false;
+          if (update.result) {
+            this.explanation = update.result.explanation || '';
+            
+            let fullContent = `<div>${this.explanation}</div>`;
+            
+            if (update.result.summary && update.result.summary.length > 0) {
+              fullContent += `<div class="mt-4"><h4 class="font-bold text-lg mb-2">Summary</h4><ul class="list-disc pl-5 space-y-1">`;
+              update.result.summary.forEach((s: string) => fullContent += `<li>${s}</li>`);
+              fullContent += `</ul></div>`;
             }
-          }, 1000);
+            
+            if (update.result.examples && update.result.examples.length > 0) {
+              fullContent += `<div class="mt-4"><h4 class="font-bold text-lg mb-2">Examples</h4><ul class="list-disc pl-5 space-y-1">`;
+              update.result.examples.forEach((e: string) => fullContent += `<li>${e}</li>`);
+              fullContent += `</ul></div>`;
+            }
+            
+            this.explanationText = this.sanitizer.bypassSecurityTrustHtml(fullContent);
+            
+            // Auto-trigger speech after a short delay
+            setTimeout(() => {
+              if (this.explanation && !this.isReading) {
+                this.readAloud();
+              }
+            }, 1000);
+          } else {
+            this.isContentError = true;
+            this.errorMessage = 'Explanation content is empty.';
+          }
+        } else if (update.status === 'failed') {
+          this.isContentLoading = false;
+          this.isContentError = true;
+          this.errorMessage = update.result?.error?.message || update.error || 'AI Generation failed.';
         }
       }
     });
+  }
+
+  retry() {
+    this.load();
   }
 
   ngOnInit() {
@@ -123,18 +167,44 @@ export class ExplanationComponent implements OnInit {
   }
 
   isReading = false;
+  isPaused = false;
 
   readAloud() {
     this.isReading = true;
+    this.isPaused = false;
     const textToRead = this.convertHtmlToPlainText(this.explanation);
     this.voiceService.speak(textToRead, () => {
       this.isReading = false;
+      this.isPaused = false;
     });
+  }
+
+  pauseReading() {
+    this.isPaused = true;
+    this.voiceService.pauseSpeaking();
+  }
+
+  resumeReading() {
+    this.isPaused = false;
+    this.voiceService.resumeSpeaking();
   }
 
   stopReading() {
     this.voiceService.stopSpeaking();
     this.isReading = false;
+    this.isPaused = false;
+  }
+  
+  isListening = false;
+  
+  startListening() {
+    this.isListening = true;
+    this.voiceService.listen((text: string) => {
+      this.isListening = false;
+      if (text) {
+        this.prompt = text;
+      }
+    });
   }
 
   private scrollToBottom() {

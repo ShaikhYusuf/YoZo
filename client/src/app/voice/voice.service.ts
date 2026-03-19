@@ -156,6 +156,15 @@ export class VoiceService {
     this.volumeSubject.next(0);
   }
 
+  pauseSpeaking() {
+    window.speechSynthesis.pause();
+    this.volumeSubject.next(0);
+  }
+
+  resumeSpeaking() {
+    window.speechSynthesis.resume();
+  }
+
   listen(callback: (heard: string) => void, minSilenceMs = 3000) {
     if (!this.recognition) {
        console.warn('SpeechRecognition API not available.');

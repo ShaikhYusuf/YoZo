@@ -1,12 +1,12 @@
 <!-- Progress Tracker Management Page -->
 <div class="max-w-7xl mx-auto p-6 space-y-6">
-  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-foreground tracking-tight">Progress Logs Details</h2>
+  <div class="bg-surface border border-border rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-border">
+      <h2 class="text-lg font-semibold text-foreground">Progress Logs Details</h2>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left">
-        <thead class="text-xs text-muted uppercase bg-surface-hover/50 border-b border-surface-border">
+        <thead class="text-sm text-muted border-b border-border">
           <tr>
             <th class="px-6 py-3 font-medium">Subject</th>
             <th class="px-6 py-3 font-medium">Lesson Section</th>
@@ -17,14 +17,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let element of dataSource" class="border-b border-surface-border hover:bg-surface-hover/50 transition-colors duration-150">
-            <td class="px-6 py-4 text-foreground font-medium">{{ element.subject }}</td>
-            <td class="px-6 py-4 text-muted">{{ element.lessonsection }}</td>
-            <td class="px-6 py-4 text-muted font-mono"><span [class.text-green-500]="element.quiz >= 80" [class.text-amber-500]="element.quiz < 80 && element.quiz >= 50" [class.text-red-500]="element.quiz < 50">{{ element.quiz }}%</span></td>
-            <td class="px-6 py-4 text-muted font-mono"><span [class.text-green-500]="element.fillblanks >= 80" [class.text-amber-500]="element.fillblanks < 80 && element.fillblanks >= 50" [class.text-red-500]="element.fillblanks < 50">{{ element.fillblanks }}%</span></td>
-            <td class="px-6 py-4 text-muted font-mono"><span [class.text-green-500]="element.truefalse >= 80" [class.text-amber-500]="element.truefalse < 80 && element.truefalse >= 50" [class.text-red-500]="element.truefalse < 50">{{ element.truefalse }}%</span></td>
-            <td class="px-6 py-4 text-right space-x-1">
-              <button (click)="editProgress(element)" title="Edit" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light"><i class="fa-solid fa-pen-to-square"></i></button>
+          <tr *ngFor="let element of dataSource" class="group border-b border-border hover:bg-surface-hover transition-colors">
+            <td class="px-6 py-3 text-foreground font-medium">{{ element.subject }}</td>
+            <td class="px-6 py-3 text-muted">{{ element.lessonsection }}</td>
+            <td class="px-6 py-3 text-muted font-mono"><span [class.text-success]="element.quiz >= 80" [class.text-warning]="element.quiz < 80 && element.quiz >= 50" [class.text-danger]="element.quiz < 50">{{ element.quiz }}%</span></td>
+            <td class="px-6 py-3 text-muted font-mono"><span [class.text-success]="element.fillblanks >= 80" [class.text-warning]="element.fillblanks < 80 && element.fillblanks >= 50" [class.text-danger]="element.fillblanks < 50">{{ element.fillblanks }}%</span></td>
+            <td class="px-6 py-3 text-muted font-mono"><span [class.text-success]="element.truefalse >= 80" [class.text-warning]="element.truefalse < 80 && element.truefalse >= 50" [class.text-danger]="element.truefalse < 50">{{ element.truefalse }}%</span></td>
+            <td class="px-6 py-3 text-right">
+              <div class="inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="editProgress(element)" title="Edit" class="text-muted hover:text-foreground transition-colors p-2 rounded-md hover:bg-surface-hover"><i class="fa-solid fa-pen-to-square"></i></button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -33,31 +35,30 @@
   </div>
 
   @if (isFormVisible) {
-    <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden animate-slide-down">
-      <div class="px-6 py-4 border-b border-surface-border flex items-center gap-2">
-        <i class="fa-solid fa-pen text-primary"></i>
-        <h3 class="text-lg font-semibold text-foreground tracking-tight">Update Progress Override</h3>
+    <div class="bg-surface border border-border rounded-lg overflow-hidden animate-slide-down">
+      <div class="px-6 py-4 border-b border-border">
+        <h3 class="text-lg font-semibold text-foreground">Update Progress Override</h3>
       </div>
       <div class="p-6">
-        <form [formGroup]="progressForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <form [formGroup]="progressForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Quiz Score Set</label>
-            <input formControlName="quiz" type="number" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('quiz')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+            <label class="mb-1 text-sm font-medium text-foreground">Quiz Score Set</label>
+            <input formControlName="quiz" type="number" class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('quiz')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Blanks Score Set</label>
-            <input formControlName="fillblanks" type="number" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('fillblanks')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+            <label class="mb-1 text-sm font-medium text-foreground">Blanks Score Set</label>
+            <input formControlName="fillblanks" type="number" class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('fillblanks')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">True/False Score Set</label>
-            <input formControlName="truefalse" type="number" class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('truefalse')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+            <label class="mb-1 text-sm font-medium text-foreground">True/False Score Set</label>
+            <input formControlName="truefalse" type="number" class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('truefalse')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
           <div class="col-span-full flex items-center gap-3 pt-2">
-            <button type="submit" [disabled]="progressForm.invalid" class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Update Score</button>
-            <button type="button" (click)="toggleForm()" class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover active:scale-95">Cancel</button>
+            <button type="submit" [disabled]="progressForm.invalid" class="h-10 bg-primary text-white font-medium px-6 rounded-md transition-colors hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none">Update Score</button>
+            <button type="button" (click)="toggleForm()" class="h-10 text-muted hover:text-foreground font-medium px-4 rounded-md transition-colors hover:bg-surface-hover">Cancel</button>
           </div>
         </form>
       </div>

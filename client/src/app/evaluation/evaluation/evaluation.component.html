@@ -1,12 +1,12 @@
 <!-- Evaluation Component -->
 <div class="max-w-4xl mx-auto p-6">
-  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-surface-border">
-      <h2 class="text-xl font-semibold text-foreground tracking-tight">Evaluation</h2>
+  <div class="bg-surface border border-border rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-border">
+      <h2 class="text-lg font-semibold text-foreground">Evaluation</h2>
     </div>
     <div class="p-6 space-y-6">
-      <!-- Custom Progress Bar -->
-      <div class="w-full bg-surface-border rounded-full h-2.5 overflow-hidden">
+      <!-- Progress Bar -->
+      <div class="w-full bg-border rounded-full h-2 overflow-hidden">
         <div class="h-full bg-primary rounded-full transition-all duration-500 ease-out" [style.width.%]="progress"></div>
       </div>
 
@@ -27,7 +27,7 @@
       </ng-container>
     </div>
 
-    <div class="px-6 py-4 flex items-center gap-3 border-t border-surface-border">
+    <div class="px-6 py-4 border-t border-border">
       <button
         (click)="nextStep()"
         [disabled]="
@@ -35,8 +35,7 @@
           (currentStep === 2 && trueFalseScore < 90) ||
           (currentStep === 3 && fillBlankScore < 90)
         "
-        class="btn-brand"
-      >
+        class="h-10 bg-primary text-white font-medium px-6 rounded-md transition-colors hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none">
         {{ progress == 100 ? "Submit" : "Next" }}
       </button>
     </div>

@@ -1,24 +1,24 @@
 <!-- Login Details Management Page -->
 <div class="max-w-5xl mx-auto p-6 space-y-6">
-  
+
   <!-- Header Card with Data Table -->
-  <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden">
+  <div class="bg-surface border border-border rounded-lg overflow-hidden">
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-foreground tracking-tight">User Accounts</h2>
-      <button 
-        (click)="toggleForm()" 
-        class="inline-flex items-center gap-2 bg-primary text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95"
+    <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-foreground">User Accounts</h2>
+      <button
+        (click)="toggleForm()"
+        class="inline-flex items-center gap-2 h-10 bg-primary text-white font-medium px-4 rounded-md transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98]"
       >
         <i class="fa-solid" [class]="isFormVisible ? 'fa-pen' : 'fa-plus'"></i>
         {{ isFormVisible ? 'Edit' : 'Add User' }}
       </button>
     </div>
 
-    <!-- Custom Tailwind Table -->
+    <!-- Table -->
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left">
-        <thead class="text-xs text-muted uppercase bg-surface-hover/50 border-b border-surface-border">
+        <thead class="text-sm text-muted border-b border-border">
           <tr>
             <th class="px-6 py-3 font-medium">Name</th>
             <th class="px-6 py-3 font-medium">Username</th>
@@ -28,22 +28,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let element of dataSource" class="border-b border-surface-border hover:bg-surface-hover/50 transition-colors duration-150">
-            <td class="px-6 py-4 text-foreground font-medium">{{ element.name }}</td>
-            <td class="px-6 py-4 text-muted">{{ element.username }}</td>
-            <td class="px-6 py-4 text-muted font-mono text-xs">{{ element.password }}</td>
-            <td class="px-6 py-4">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-light text-primary border border-primary/20">
-                {{ element.role }}
-              </span>
+          <tr *ngFor="let element of dataSource" class="group border-b border-border hover:bg-surface-hover transition-colors">
+            <td class="px-6 py-3 text-foreground font-medium">{{ element.name }}</td>
+            <td class="px-6 py-3 text-muted">{{ element.username }}</td>
+            <td class="px-6 py-3 text-muted font-mono text-xs">{{ element.password }}</td>
+            <td class="px-6 py-3">
+              <ui-badge variant="info">{{ element.role }}</ui-badge>
             </td>
-            <td class="px-6 py-4 text-right space-x-2">
-              <button (click)="editLoginDetail(element)" class="text-primary hover:text-primary-hover transition-colors p-1.5 rounded-md hover:bg-primary-light">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button (click)="deleteLoginDetail(element.Id!)" class="text-red-500 hover:text-red-600 transition-colors p-1.5 rounded-md hover:bg-red-50">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+            <td class="px-6 py-3 text-right">
+              <div class="inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="editLoginDetail(element)" title="Edit" class="text-muted hover:text-foreground transition-colors p-2 rounded-md hover:bg-surface-hover">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button (click)="deleteLoginDetail(element.Id!)" title="Delete" class="text-muted hover:text-danger transition-colors p-2 rounded-md hover:bg-danger-light">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -53,65 +53,64 @@
 
   <!-- Form Card -->
   @if (isFormVisible) {
-    <div class="bg-surface/80 backdrop-blur-md border border-surface-border shadow-glass rounded-xl overflow-hidden animate-slide-down">
-      <div class="px-6 py-4 border-b border-surface-border flex items-center gap-2">
-        <i class="fa-solid" [class]="isEditMode ? 'fa-pen' : 'fa-plus'" class="text-primary"></i>
-        <h3 class="text-lg font-semibold text-foreground tracking-tight">
+    <div class="bg-surface border border-border rounded-lg overflow-hidden animate-slide-down">
+      <div class="px-6 py-4 border-b border-border">
+        <h3 class="text-lg font-semibold text-foreground">
           {{ isEditMode ? 'Update User' : 'Add User' }}
         </h3>
       </div>
 
       <div class="p-6">
-        <form [formGroup]="logindetailForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          
+        <form [formGroup]="logindetailForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
           <!-- Name -->
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Name</label>
+            <label class="mb-1 text-sm font-medium text-foreground">Name</label>
             <input formControlName="name" placeholder="Full name"
-              class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('name')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+              class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('name')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
 
           <!-- Username -->
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Username</label>
+            <label class="mb-1 text-sm font-medium text-foreground">Username</label>
             <input formControlName="username" placeholder="Enter username"
-              class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('username')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+              class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('username')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
 
           <!-- Password -->
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Password</label>
+            <label class="mb-1 text-sm font-medium text-foreground">Password</label>
             <input formControlName="password" placeholder="Enter password" type="password"
-              class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted" />
-            <span *ngFor="let error of getErrorMessages('password')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+              class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted" />
+            <span *ngFor="let error of getErrorMessages('password')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
 
           <!-- Role Select -->
           <div class="flex flex-col">
-            <label class="mb-1.5 text-sm font-medium text-foreground">Role</label>
+            <label class="mb-1 text-sm font-medium text-foreground">Role</label>
             <select formControlName="role"
-              class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer">
+              class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary appearance-none cursor-pointer">
               <option value="" disabled selected>Select role</option>
               <option *ngFor="let role of roleInformation" [value]="role">{{ role }}</option>
             </select>
-            <span *ngFor="let error of getErrorMessages('role')" class="text-red-500 text-xs mt-1">{{ error }}</span>
+            <span *ngFor="let error of getErrorMessages('role')" class="text-danger text-sm mt-1">{{ error }}</span>
           </div>
 
           <!-- Form Actions -->
           <div class="col-span-full flex items-center gap-3 pt-2">
-            <button 
+            <button
               type="submit"
               [disabled]="logindetailForm.invalid"
-              class="bg-primary text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-glow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="h-10 bg-primary text-white font-medium px-6 rounded-md transition-colors hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
             >
               {{ isEditMode ? 'Update' : 'Add User' }}
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               (click)="toggleForm()"
-              class="bg-surface text-foreground font-medium px-5 py-2.5 rounded-lg border border-surface-border transition-all duration-200 hover:bg-surface-hover hover:shadow-subtle active:scale-95"
+              class="h-10 text-muted hover:text-foreground font-medium px-4 rounded-md transition-colors hover:bg-surface-hover"
             >
               Cancel
             </button>

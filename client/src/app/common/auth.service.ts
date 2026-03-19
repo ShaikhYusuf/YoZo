@@ -1,9 +1,10 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { ILoginDetail, RoleType } from '../login-detail/logindetail.model';
+import { ILoginDetail, RoleType, PermissionType } from '../login-detail/logindetail.model';
 import { IStudent } from '../student/student.model';
 
 export interface IAuthState {
   role: RoleType | null;
+  permissions: PermissionType[];
   name: string | null;
   username: string | null;
   studentId: number | null;
@@ -11,8 +12,17 @@ export interface IAuthState {
   standardId: number | null;
 }
 
+const ROLE_PERMISSIONS: Record<RoleType, PermissionType[]> = {
+  admin: ['VIEW_USERS', 'EDIT_COLLEGES', 'VIEW_DASHBOARD', 'MANAGE_SETTINGS', 'ACCESS_ALL'],
+  principal: ['VIEW_USERS', 'VIEW_DASHBOARD', 'MANAGE_SETTINGS'],
+  teacher: ['VIEW_DASHBOARD', 'MANAGE_SETTINGS'],
+  student: ['VIEW_DASHBOARD', 'MANAGE_SETTINGS'],
+  parent: ['VIEW_DASHBOARD', 'MANAGE_SETTINGS']
+};
+
 const EMPTY_STATE: IAuthState = {
   role: null,
+  permissions: [],
   name: null,
   username: null,
   studentId: null,
@@ -35,8 +45,12 @@ export class AuthService {
    * Pass the optional student object for student-role logins.
    */
   setUser(loginDetail: ILoginDetail, student?: IStudent): void {
+    const perms = (loginDetail.permissions && loginDetail.permissions.length > 0)
+      ? loginDetail.permissions
+      : ROLE_PERMISSIONS[loginDetail.role] || [];
     this._user.set({
       role: loginDetail.role,
+      permissions: perms,
       name: loginDetail.name,
       username: loginDetail.username,
       studentId: student?.Id ?? null,
@@ -45,6 +59,7 @@ export class AuthService {
     });
     // Persist role + name for page refreshes
     localStorage.setItem('role', loginDetail.role);
+    localStorage.setItem('permissions', JSON.stringify(perms));
     localStorage.setItem('userName', loginDetail.name);
     if (student) {
       localStorage.setItem('schoolId', String(student.school ?? ''));
@@ -57,9 +72,20 @@ export class AuthService {
   restoreFromStorage(): void {
     const role = localStorage.getItem('role') as RoleType | null;
     const name = localStorage.getItem('userName');
+    let permissions: PermissionType[] = [];
+    try {
+      permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+    } catch {}
+
     if (role && name) {
+      if (permissions.length === 0) {
+        permissions = ROLE_PERMISSIONS[role] || [];
+        localStorage.setItem('permissions', JSON.stringify(permissions));
+      }
+
       this._user.set({
         role,
+        permissions,
         name,
         username: null,
         studentId: Number(localStorage.getItem('studentId')) || null,
@@ -74,6 +100,7 @@ export class AuthService {
     this._user.set({ ...EMPTY_STATE });
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('permissions');
     localStorage.removeItem('userName');
     localStorage.removeItem('schoolId');
     localStorage.removeItem('standardId');

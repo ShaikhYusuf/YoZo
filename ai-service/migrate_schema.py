@@ -1,6 +1,6 @@
 import json
 import psycopg2
-from typing import Any
+from typing import Any, Dict
 import os
 import sys
 
@@ -28,7 +28,7 @@ def migrate_data():
     cur.execute("SELECT path, title FROM public.lesson_hierarchy WHERE path NOT LIKE '%-L%';")
     topics = cur.fetchall()
 
-    subject_map: dict[str, Any] = {} # Maps 'T01' -> Inserted Subject Id
+    subject_map: Dict[str, Any] = {} # Maps 'T01' -> Inserted Subject Id
     
     for t_path, t_title in topics:
         print(f"Migrating Subject: {t_title} ({t_path})")
@@ -47,7 +47,7 @@ def migrate_data():
     cur.execute("SELECT path, title, parent_path FROM public.lesson_hierarchy WHERE path LIKE '%-L%';")
     lessons = cur.fetchall()
 
-    lesson_map: dict[str, Any] = {} # Maps 'T01-L01' -> Inserted Lesson Id
+    lesson_map: Dict[str, Any] = {} # Maps 'T01-L01' -> Inserted Lesson Id
     
     for l_path, l_title, parent_path in lessons:
         if parent_path in subject_map:

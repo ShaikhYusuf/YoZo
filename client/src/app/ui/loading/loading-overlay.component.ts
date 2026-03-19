@@ -1,75 +1,52 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AITaskService, AITaskUpdate } from '../../common/ai-task.service';
-import { BadgeComponent } from '../badge/badge.component';
 
 @Component({
   selector: 'ui-loading-overlay',
   standalone: true,
-  imports: [CommonModule, BadgeComponent],
+  imports: [CommonModule],
   template: `
-    <div *ngIf="hasActiveTasks()" class="fixed inset-0 z-[100] flex items-center justify-center bg-background/60 backdrop-blur-md transition-all duration-500">
-      <div class="relative w-full max-w-md p-8 rounded-3xl bg-surface border border-surface-border shadow-2xl animate-fade-in-up">
-        
-        <!-- Animated Background Glow -->
-        <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur opacity-20 animate-pulse"></div>
-        
-        <div class="relative space-y-6">
+    <div *ngIf="hasActiveTasks()" class="fixed inset-0 z-modal flex items-center justify-center bg-background/60 backdrop-blur-sm transition-all">
+      <div class="relative w-full max-w-md p-6 rounded-lg bg-surface border border-border shadow-lg animate-fade-in">
+        <div class="space-y-6">
           <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
-              YoZo AI is thinking...
-            </h3>
-            <ui-badge variant="xp">AI Engine</ui-badge>
+            <h3 class="text-lg font-semibold text-foreground">Processing…</h3>
+            <span class="text-xs font-medium text-primary bg-primary-light px-2 py-1 rounded-full border border-primary/20">AI Engine</span>
           </div>
 
           <div class="space-y-4">
-            <div *ngFor="let task of getTasks()" class="p-4 rounded-2xl bg-surface-hover/50 border border-surface-border transition-all">
+            <div *ngFor="let task of getTasks()" class="p-4 rounded-md bg-surface-hover border border-border">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-foreground/80">{{ getTaskLabel(task.path) }}</span>
-                <span [ngClass]="getStatusClasses(task.status)" class="text-xs font-semibold px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                <span class="text-sm font-medium text-foreground">{{ getTaskLabel(task.path) }}</span>
+                <span [ngClass]="getStatusClasses(task.status)" class="text-xs font-medium px-2 py-1 rounded-full">
                   {{ task.status }}
                 </span>
               </div>
-              
+
               <!-- Progress Bar -->
-              <div class="h-1.5 w-full bg-surface-border rounded-full overflow-hidden">
+              <div class="h-1 w-full bg-border rounded-full overflow-hidden">
                 <div [ngClass]="{
-                  'w-1/3 animate-shimmer': task.status === 'pending',
-                  'w-2/3 animate-progress-fast': task.status === 'running',
-                  'w-full bg-green-500': task.status === 'completed',
-                  'w-full bg-red-500': task.status === 'failed'
-                }" class="h-full bg-indigo-500 transition-all duration-700 ease-out"></div>
+                  'w-1/3': task.status === 'pending',
+                  'w-2/3': task.status === 'running',
+                  'w-full bg-success': task.status === 'completed',
+                  'w-full bg-danger': task.status === 'failed'
+                }" class="h-full bg-primary transition-all rounded-full"></div>
               </div>
 
-              <p *ngIf="task.error" class="mt-2 text-xs text-red-400 italic">
-                Error: {{ task.error }}
+              <p *ngIf="task.error" class="mt-2 text-sm text-danger">
+                {{ task.error }}
               </p>
             </div>
           </div>
 
-          <div class="pt-2 text-center">
-            <p class="text-xs text-foreground/40 font-medium">
-              This usually takes 10-20 seconds. Feel free to wait!
-            </p>
-          </div>
+          <p class="text-center text-xs text-muted">
+            This usually takes 10–20 seconds.
+          </p>
         </div>
       </div>
     </div>
   `,
-  styles: [`
-    @keyframes progress-fast {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-    .animate-progress-fast {
-      animation: progress-fast 2s infinite ease-in-out;
-      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.8), transparent);
-    }
-    .animate-shimmer {
-      animation: progress-fast 3s infinite linear;
-      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.5), transparent);
-    }
-  `]
 })
 export class LoadingOverlayComponent {
   private aiTaskService = inject(AITaskService);
@@ -91,10 +68,10 @@ export class LoadingOverlayComponent {
 
   getStatusClasses(status: string): string {
     switch (status) {
-      case 'completed': return 'text-green-400 bg-green-400/10';
-      case 'failed': return 'text-red-400 bg-red-400/10';
-      case 'running': return 'text-indigo-400 bg-indigo-400/10 animate-pulse';
-      default: return 'text-purple-400 bg-purple-400/10';
+      case 'completed': return 'text-success bg-success-light';
+      case 'failed': return 'text-danger bg-danger-light';
+      case 'running': return 'text-primary bg-primary-light animate-pulse';
+      default: return 'text-muted bg-surface-hover';
     }
   }
 }

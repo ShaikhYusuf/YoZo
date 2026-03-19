@@ -1,64 +1,62 @@
-<!-- Full-screen centered login -->
-<div class="min-h-screen flex items-center justify-center bg-brand-gradient animate-gradientBackground px-4">
-  
-  <!-- Glassmorphic Login Card -->
-  <div class="w-full max-w-md bg-surface/90 backdrop-blur-lg border border-surface-border shadow-glass rounded-2xl p-8 animate-slideDown">
-    
+<!-- Login Page -->
+<div class="min-h-screen flex items-center justify-center bg-background px-4">
+
+  <!-- Login Card -->
+  <div class="w-full max-w-md bg-surface border border-border rounded-lg p-8 shadow-md animate-fade-in">
+
     <!-- Logo / Brand -->
     <div class="text-center mb-8 flex flex-col items-center">
-      <div class="flex justify-center items-center w-16 h-16 rounded-full bg-surface shadow-md mb-4 animate-fadeIn">
-        <mat-icon class="text-4xl text-brand-indigo">school</mat-icon>
+      <div class="flex justify-center items-center w-12 h-12 rounded-lg bg-primary mb-4">
+        <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
       </div>
-      <h1 class="text-3xl font-bold text-foreground tracking-tight">Yo<span class="text-brand-peach font-extrabold">Zo</span></h1>
-      <p class="text-muted text-sm mt-2">Sign in to your account</p>
+      <h1 class="text-2xl font-semibold text-foreground">YoZo</h1>
+      <p class="text-muted text-sm mt-1">Sign in to your account</p>
     </div>
 
     <!-- Login Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
-      
-      <!-- Username Field -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+
+      <!-- Username -->
       <div class="flex flex-col">
-        <label class="mb-1.5 text-sm font-medium text-foreground">Username</label>
-        <input 
-          type="text" 
+        <label class="mb-1 text-sm font-medium text-foreground">Username</label>
+        <input
+          type="text"
           formControlName="username"
           placeholder="Enter your username"
-          class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted"
+          class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted"
         />
       </div>
 
-      <!-- Password Field -->
+      <!-- Password -->
       <div class="flex flex-col">
-        <label class="mb-1.5 text-sm font-medium text-foreground">Password</label>
-        <input 
-          type="password" 
+        <label class="mb-1 text-sm font-medium text-foreground">Password</label>
+        <input
+          type="password"
           formControlName="password"
           placeholder="Enter your password"
-          class="bg-surface border border-surface-border rounded-lg px-4 py-2.5 text-sm text-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted"
+          class="w-full h-10 bg-surface border border-border rounded-md px-4 text-base text-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary placeholder:text-muted"
         />
       </div>
 
       <!-- Error Message -->
       @if (errorMessage) {
-        <div class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2.5 rounded-lg">
+        <div class="bg-danger-light border border-danger-border text-danger text-sm px-4 py-3 rounded-md animate-shake">
           {{ errorMessage }}
         </div>
       }
 
       <!-- Submit Button -->
-      <button 
+      <button
         type="submit"
         [disabled]="loginForm.invalid || isLoading"
-        class="w-full btn-brand"
+        class="w-full h-10 bg-primary text-white font-medium rounded-md transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] flex items-center justify-center gap-2"
       >
-        <span class="flex items-center justify-center gap-2">
-          @if (isLoading) {
-            <i class="fa-solid fa-circle-notch fa-spin"></i>
-            Signing in…
-          } @else {
-            Login <mat-icon class="transition-transform group-hover:translate-x-1">arrow_forward</mat-icon>
-          }
-        </span>
+        @if (isLoading) {
+          <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          Signing in…
+        } @else {
+          Sign In
+        }
       </button>
     </form>
 

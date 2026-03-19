@@ -1,13 +1,17 @@
 from importlib.resources import path
 import json
+import logging
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from lib.lesson_content import MyLessonContent
 from lib.lesson_match_column import MyLessonMatchColumn
 from lib.lesson_quiz import MyLessonQuiz
 from lib.lesson_short_question import MyLessonShortQuestion
 from lib.lesson_truefalse import MyLessonTrueFalse
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # ------------------- Data Models ------------------ #
 
@@ -41,7 +45,8 @@ class MyLessonStore():
     table_scores = "lesson_scores"
     table_hierarchy = "lesson_hierarchy"
 
-    conn = None
+    conn: Any = None
+    llm: Any = None
 
     @classmethod
     def initialize(cls, llm, conn):
@@ -78,12 +83,13 @@ class MyLessonStore():
         );
         """
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             print("Error: Database connection not initialized.")
             return
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
 
                 cur.execute(create_sections)
                 cur.execute(create_scores)
@@ -159,8 +165,9 @@ class MyLessonStore():
                 cls.conn.commit()
 
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            conn = cls.conn
+            if conn:
+                conn.rollback()
             print("Error inserting book:", e)
 
     # ------------------------------------------------
@@ -173,11 +180,12 @@ class MyLessonStore():
         SELECT path, content
         FROM {cls.table_sections}
         """
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return None
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
 
                 cur.execute(query)
                 rows = cur.fetchall()
@@ -222,29 +230,34 @@ class MyLessonStore():
             """
             params = (path_or_id,)
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return None
 
         try:
-            with cls.conn.cursor() as cur:
+            logger.info(f"Attempting to read section: {path_or_id}")
+            with conn.cursor() as cur:
                 cur.execute(query, params)
                 row = cur.fetchone()
 
                 if not row:
+                    logger.warning(f"Section {path_or_id} not found in tenanta.lessonsection, checking fallback...")
                     # Fallback to public schema for legacy support if needed
                     legacy_query = f"SELECT path, content FROM {cls.table_sections} WHERE path = %s"
                     cur.execute(legacy_query, (path_or_id,))
                     row = cur.fetchone()
                     if not row:
+                        logger.error(f"Section {path_or_id} NOT found in any schema.")
                         return None
 
+                logger.info(f"Successfully retrieved section: {path_or_id}")
                 return LessonSection(
                     path=row[0],
                     content=row[1]
                 )
 
         except Exception as e:
-            print(f"Error reading section ({path_or_id}): {e}")
+            logger.error(f"FAILED to read section ({path_or_id}): {e}", exc_info=True)
             if cls.conn:
                 cls.conn.rollback()
             return None
@@ -261,13 +274,14 @@ class MyLessonStore():
         ORDER BY path
         """
 
-        results = []
+        results: List[LessonHierarchy] = []
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return results
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
 
                 cur.execute(query)
 
@@ -299,11 +313,12 @@ class MyLessonStore():
         WHERE path = %s
         """
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return None
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
 
                 cur.execute(query, (path,))
                 row = cur.fetchone()
@@ -372,13 +387,14 @@ class MyLessonStore():
         FROM {cls.table_scores}
         """
 
-        results = []
+        results: List[LessonScore] = []
 
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return results
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
 
                 cur.execute(query)
                 rows = cur.fetchall()
@@ -418,7 +434,8 @@ class MyLessonStore():
         # attach scores to lessons
         for score in scores:
 
-            lesson_path = "-".join(score.path.split("-")[:2])
+            parts = score.path.split("-")
+            lesson_path = f"{parts[0]}-{parts[1]}" if len(parts) >= 2 else parts[0]
 
             if lesson_path in hierarchy_map:
                 hierarchy_map[lesson_path].sections.append(score)
@@ -432,17 +449,18 @@ class MyLessonStore():
         SET quiz_score = %s
         WHERE path = %s
         """
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return False
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (quiz_score, path))
-            cls.conn.commit()
+            conn.commit()
             return True
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print("Error updating quiz score:", e)
             return False
 
@@ -453,17 +471,18 @@ class MyLessonStore():
         SET truefalse_score = %s
         WHERE path = %s
         """
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return False
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (truefalse_score, path))
-            cls.conn.commit()
+            conn.commit()
             return True
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print("Error updating true/false score:", e)
             return False
 
@@ -474,17 +493,18 @@ class MyLessonStore():
         SET shortquestion_score = %s
         WHERE path = %s
         """
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return False
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (shortquestion_score, path))
-            cls.conn.commit()
+            conn.commit()
             return True
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print("Error updating short‑question score:", e)
             return False
 
@@ -496,16 +516,17 @@ class MyLessonStore():
         SET content = %s
         WHERE path = %s
         """
-        if cls.conn is None:
+        conn = cls.conn
+        if conn is None:
             return False
 
         try:
-            with cls.conn.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, (content, path))
-            cls.conn.commit()
+            conn.commit()
             return cur.rowcount > 0 if hasattr(cur, 'rowcount') else True
         except Exception as e:
-            if cls.conn:
-                cls.conn.rollback()
+            if conn:
+                conn.rollback()
             print("Error updating section content:", e)
             return False

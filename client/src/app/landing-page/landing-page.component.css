@@ -10,11 +10,11 @@
   --primary-dark: theme('colors.primary.hover');
   --primary-light: theme('colors.primary.light');
   --primary-mid: rgba(79, 70, 229, 0.3); /* indigo 600 */
-  --secondary: theme('colors.brand.rose');
+  --secondary: #d76d77;
   --secondary-light: rgba(215, 109, 119, 0.15);
-  --accent: theme('colors.brand.indigo');
+  --accent: #3a1c71;
   --accent-light: rgba(58, 28, 113, 0.15);
-  --amber: theme('colors.brand.peach');
+  --amber: #ffaf7b;
 
   --text: #f8fafc;
   /* crisp white text */
@@ -182,7 +182,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, theme('colors.brand.indigo'), theme('colors.brand.rose'));
+  background: linear-gradient(135deg, #3a1c71, #d76d77);
   color: #ffffff;
   /* High contrast white text on brand gradient */
   padding: 14px 30px;
