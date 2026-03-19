@@ -30,7 +30,7 @@ export class Server {
     this.app = new App().init();
     this.server = http.createServer(this.app);
     this.healthServer = new ServerHealth(this.logger);
-    this.socketService = new SocketService();
+    this.socketService = container.get(SocketService);
   }
 
   async startServer(): Promise<void> {

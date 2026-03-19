@@ -4,6 +4,7 @@ import { VoiceService } from '../../voice/voice.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IFillBlankComponent } from './fillblank.component.model';
+import { AITaskService } from '../../common/ai-task.service';
 
 @Component({
   selector: 'app-fillblank',
@@ -21,16 +22,30 @@ export class FillBlankComponent implements OnInit {
 
   constructor(
     private evaluationService: EvaluationService,
-    private voiceService: VoiceService
+    private voiceService: VoiceService,
+    private aiTaskService: AITaskService
   ) {}
 
   private load() {
-    this.evaluationService.getFillBlanks(this.lessonsectionId).subscribe((data: any[]) => {
-      this.fillBlanks = data.map((q: any) => ({
-        ...q,
-        selectedAnswer: null,
-        answered: false,
-      }));
+    this.evaluationService.getFillBlanks(this.lessonsectionId).subscribe();
+
+    this.aiTaskService.getUpdates().subscribe((update: any) => {
+      if (update.path.includes('fillblank') && update.path.includes(this.lessonsectionId.toString())) {
+        if (update.status === 'completed' && update.result) {
+          try {
+            const rawData = typeof update.result === 'string' ? JSON.parse(update.result) : update.result;
+            if (rawData && rawData.questions) {
+              this.fillBlanks = rawData.questions.map((q: any) => ({
+                ...q,
+                selectedAnswer: null,
+                answered: false,
+              }));
+            }
+          } catch (e) {
+            console.error('Failed to parse fill-blank result:', e);
+          }
+        }
+      }
     });
   }
 

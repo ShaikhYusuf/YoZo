@@ -60,7 +60,9 @@ class MyLessonContent():
         response = None
         for attempt in range(1, max_attempts + 1):
             try:
+                logger.info(f"LLM Invoke attempt {attempt} for path: {path}...")
                 response = chain.invoke({"paragraph": input_content_text})
+                logger.info(f"LLM Invoke success for path: {path}.")
                 break
             except OutputParserException as e:
                 # If the model produced fewer than the required number of questions,
@@ -98,16 +100,19 @@ class MyLessonContent():
     async def generate_response(cls, path: str) -> Optional[LessonContent]:
         from lib.lesson_store import MyLessonStore
         
+        logger.info(f"Generating AI response for path/ID: {path}")
         content = cls.read_data_db(path)
         if content:
+            logger.info(f"Found existing AI content in DB for: {path}")
             return content
         
         # If missing, try to generate it using base content from lesson_sections
         section = MyLessonStore.read_section_db(path)
         if section and section.content:
-            logger.info(f"On-demand generation triggered for content: {path}")
+            logger.info(f"Source content found (length: {len(section.content)}). Triggering LLM generation for: {path}")
             return await cls.generate_contents(path, section.content)
             
+        logger.error(f"Failed to find source lesson content for: {path}. Cannot generate AI content.")
         return None
 
     @classmethod

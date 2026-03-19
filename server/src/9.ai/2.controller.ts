@@ -59,7 +59,8 @@ export class ControllerAi extends BaseController {
       
       // If the AI service returned a task_id (Status 202 Accepted), start polling in background
       if (response.status === 202 && data.data && data.data.task_id) {
-        this.startPoller(data.data.task_id, targetPath);
+        const trackedPath = searchParams.toString() ? `${targetPath}?${searchParams.toString()}` : targetPath;
+        this.startPoller(data.data.task_id, trackedPath);
       }
 
       this.setCommonHeaders(res);
@@ -101,6 +102,16 @@ export class ControllerAi extends BaseController {
             });
             return; // Stop polling
           }
+        } else {
+          // Handle API errors (like 404 Task Not Found)
+          this.logger.error(`AI Service reported error for task ${taskId}: ${data.message || 'Unknown error'}`);
+          this.socketService.emit("ai_task_update", {
+            taskId,
+            status: "failed",
+            path: originalPath,
+            error: data.message || "Quality Check: AI Task lost or failed."
+          });
+          return; // Stop polling
         }
         
         // If still pending/running, poll again in 2 seconds
@@ -134,6 +145,11 @@ export class ControllerAi extends BaseController {
     await this.proxyRequest(req, res, "/truefalse");
   }
 
+  @httpGet("/fillblank", aiLimiter, requireAuth)
+  async getFillBlank(@request() req: Request, @response() res: Response) {
+    await this.proxyRequest(req, res, "/fillblank");
+  }
+
   @httpGet("/shortquestions", aiLimiter, requireAuth)
   async getShortQuestions(@request() req: Request, @response() res: Response) {
     await this.proxyRequest(req, res, "/shortquestions");
@@ -142,6 +158,11 @@ export class ControllerAi extends BaseController {
   @httpPost("/compare", aiLimiter, requireAuth)
   async compare(@request() req: Request, @response() res: Response) {
     await this.proxyRequest(req, res, "/compare", "POST", req.body);
+  }
+
+  @httpPost("/chat", aiLimiter, requireAuth)
+  async chat(@request() req: Request, @response() res: Response) {
+    await this.proxyRequest(req, res, "/chat", "POST", req.body);
   }
 
   @httpGet("/hierarchy", aiLimiter, requireAuth)

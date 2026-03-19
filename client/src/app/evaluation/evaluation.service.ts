@@ -86,22 +86,15 @@ export class EvaluationService {
     );
   }
 
-  getFillBlanks(lessonSectionId: number): Observable<IFillInTheBlank[]> {
-    return this.http
-      .get<string>(`${this.apiUrl}/${lessonSectionId}/fillblank`, {
-        headers: this.apiHeaders.headers,
+  getFillBlanks(lessonSectionId: number): Observable<any> {
+    const path = `/fillblank?path=${lessonSectionId}`;
+    return this.http.get<any>(`${this.aiUrl}${path}`, { headers: this.apiHeaders.headers }).pipe(
+      tap((res: any) => {
+        if (res.data?.task_id) {
+          this.aiTaskService.trackTask(res.data.task_id, path);
+        }
       })
-      .pipe(
-        map((response: string) => {
-          const fillBlanks: IFillInTheBlank[] = JSON.parse(response);
-            const shuffledFillBlanks = this.shuffleQZFBArray(
-              fillBlanks
-            ) as IFillInTheBlank[];
-            return shuffledFillBlanks
-              .map((fillblank: IFillInTheBlank) => this.shuffleOptions(fillblank) as IFillInTheBlank)
-              .slice(0, this.NUMBER_OF_QUESTIONS); // Return only the first 3 fill-in-the-blanks
-        })
-      );
+    );
   }
 
   getTrueFalse(lessonSectionId: number): Observable<any> {
@@ -110,6 +103,20 @@ export class EvaluationService {
       tap((res: any) => {
         if (res.data?.task_id) {
           this.aiTaskService.trackTask(res.data.task_id, path);
+        }
+      })
+    );
+  }
+
+  sendChat(lessonSectionId: number, prompt: string): Observable<any> {
+    const path = `/chat`;
+    return this.http.post<any>(`${this.aiUrl}${path}`, {
+      path: lessonSectionId.toString(),
+      prompt: prompt
+    }, { headers: this.apiHeaders.headers }).pipe(
+      tap((res: any) => {
+        if (res.data?.task_id) {
+          this.aiTaskService.trackTask(res.data.task_id, `/chat?path=${lessonSectionId}`);
         }
       })
     );

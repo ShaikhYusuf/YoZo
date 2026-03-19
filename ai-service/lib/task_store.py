@@ -42,15 +42,26 @@ class TaskStore:
 
     def run_async(self, task_id: str, func, *args, **kwargs):
         """Runs a function in a background thread and updates task status."""
+        import logging
+        logger = logging.getLogger(__name__)
+
         def wrapper():
+            import asyncio
+            import inspect
             try:
+                logger.info(f"Task {task_id} status: RUNNING")
                 self.update_task(task_id, TaskStatus.RUNNING)
-                # If the function is a coroutine, we'd need an event loop here.
-                # Since LangChain/Ollama calls are often blocking in the underlying libs,
-                # we assume func is a regular function or we handle the await inside.
-                result = func(*args, **kwargs)
+                
+                # Check if it's an async function
+                if inspect.iscoroutinefunction(func):
+                    result = asyncio.run(func(*args, **kwargs))
+                else:
+                    result = func(*args, **kwargs)
+                
+                logger.info(f"Task {task_id} status: COMPLETED")
                 self.update_task(task_id, TaskStatus.COMPLETED, result=result)
             except Exception as e:
+                logger.error(f"Task {task_id} status: FAILED | Error: {str(e)}")
                 self.update_task(task_id, TaskStatus.FAILED, error=str(e))
 
         thread = threading.Thread(target=wrapper)

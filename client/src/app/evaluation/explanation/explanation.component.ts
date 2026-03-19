@@ -46,8 +46,30 @@ export class ExplanationComponent implements OnInit {
     this.aiTaskService.getUpdates().subscribe((update: any) => {
       if (update.path.includes('content') && update.path.includes(this.lessonsectionId.toString())) {
         if (update.status === 'completed' && update.result) {
-          this.explanation = update.result;
-          this.explanationText = this.sanitizer.bypassSecurityTrustHtml(this.explanation);
+          this.explanation = update.result.explanation;
+          
+          let fullContent = `<div>${update.result.explanation}</div>`;
+          
+          if (update.result.summary && update.result.summary.length > 0) {
+            fullContent += `<div class="mt-4"><h4 class="font-bold text-lg mb-2">Summary</h4><ul class="list-disc pl-5 space-y-1">`;
+            update.result.summary.forEach((s: string) => fullContent += `<li>${s}</li>`);
+            fullContent += `</ul></div>`;
+          }
+          
+          if (update.result.examples && update.result.examples.length > 0) {
+            fullContent += `<div class="mt-4"><h4 class="font-bold text-lg mb-2">Examples</h4><ul class="list-disc pl-5 space-y-1">`;
+            update.result.examples.forEach((e: string) => fullContent += `<li>${e}</li>`);
+            fullContent += `</ul></div>`;
+          }
+          
+          this.explanationText = this.sanitizer.bypassSecurityTrustHtml(fullContent);
+          
+          // Auto-trigger speech after a short delay to allow UI to render
+          setTimeout(() => {
+            if (this.explanation && !this.isReading) {
+              this.readAloud();
+            }
+          }, 1000);
         }
       }
     });
@@ -55,14 +77,44 @@ export class ExplanationComponent implements OnInit {
 
   ngOnInit() {
     this.load();
+    this.listenForChatUpdates();
   }
   ngAfterViewInit() {
     this.scrollToBottom();
   }
 
+  private listenForChatUpdates() {
+    this.aiTaskService.getUpdates().subscribe((update: any) => {
+      if (update.path.includes('chat') && update.path.includes(this.lessonsectionId.toString())) {
+        if (update.status === 'completed' && update.result) {
+          this.isLoading = false;
+          const result = typeof update.result === 'string' ? JSON.parse(update.result) : update.result;
+          const answer = result.answer || result;
+          this.responseText += `\n\n**You:** ${this.lastQuestion}\n\n**Assistant:** ${answer}`;
+          this.scrollToBottom();
+        } else if (update.status === 'failed') {
+          this.isLoading = false;
+          this.errorMessage = update.error || 'Failed to get a response. Please try again.';
+        }
+      }
+    });
+  }
+
+  lastQuestion = '';
+
   sendQuestion() {
-    this.errorMessage = 'Chat feature coming soon in the next update!';
-    // TODO: Implement async chat flow
+    if (!this.prompt || this.prompt.trim() === '') return;
+    this.errorMessage = '';
+    this.isLoading = true;
+    this.lastQuestion = this.prompt;
+    this.evaluationService.sendChat(this.lessonsectionId, this.prompt).subscribe({
+      error: (err: any) => {
+        this.isLoading = false;
+        this.errorMessage = 'Failed to send question. Please try again.';
+        console.error('Chat error:', err);
+      }
+    });
+    this.prompt = '';
   }
 
 

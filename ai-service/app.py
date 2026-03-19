@@ -29,6 +29,8 @@ from lib.lesson_content import MyLessonContent  # type: ignore
 from lib.lesson_quiz import MyLessonQuiz  # type: ignore
 from lib.lesson_short_question import MyLessonShortQuestion  # type: ignore
 from lib.lesson_truefalse import MyLessonTrueFalse  # type: ignore
+from lib.lesson_fillblank import MyLessonFillBlank  # type: ignore
+from lib.lesson_assistant import MyLessonAssistant  # type: ignore
 from lib.task_store import task_store, TaskStatus  # type: ignore
 
 import asyncio
@@ -131,6 +133,8 @@ def initialize_app():
         MyLessonQuiz,
         MyLessonShortQuestion,
         MyLessonTrueFalse,
+        MyLessonFillBlank,
+        MyLessonAssistant,
     ]
 
     for cls in classes_to_init:
@@ -174,6 +178,16 @@ def get_lesson_quiz():
     task_store.run_async(task_id, run_sync_in_thread, MyLessonQuiz.generate_response(path))
     return success_response({"task_id": task_id}, "Task started", 202)
 
+@app.route('/api/ai/fillblank', methods=['GET'])
+def get_lesson_fillblank():
+    path = request.args.get('path')
+    if not path:
+        return error_response("path is required", 400)
+    
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonFillBlank.generate_response(path))
+    return success_response({"task_id": task_id}, "Task started", 202)
+
 @app.route('/api/ai/truefalse', methods=['GET'])
 def get_lesson_true_false():
     path = request.args.get('path')
@@ -207,6 +221,18 @@ def get_task_status(task_id):
         
     return success_response(task, "Task status fetched")
 
+
+@app.route('/api/ai/chat', methods=['POST'])
+def chat_with_assistant():
+    data = request.get_json()
+    path = data.get('path')
+    question = data.get('prompt')
+    if not path or not question:
+        return error_response("path and prompt are required", 400)
+    
+    task_id = task_store.create_task()
+    task_store.run_async(task_id, run_sync_in_thread, MyLessonAssistant.generate_response(path, question))
+    return success_response({"task_id": task_id}, "Task started", 202)
 
 @app.route("/api/ai/compare", methods=["POST"])
 def compare_text_to_embedding():

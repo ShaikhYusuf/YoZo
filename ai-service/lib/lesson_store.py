@@ -195,25 +195,48 @@ class MyLessonStore():
             return None
 
     @classmethod
-    def read_section_db(cls, path) -> Optional[LessonSection]:
+    def read_section_db(cls, path_or_id) -> Optional[LessonSection]:
+        
+        # Determine if we are querying by integer Id or by string path (name)
+        is_id = False
+        try:
+            int_id = int(path_or_id)
+            is_id = True
+        except (ValueError, TypeError):
+            is_id = False
 
-        query = f"""
-        SELECT path, content
-        FROM {cls.table_sections}
-        WHERE path = %s
-        """
+        if is_id:
+            # Query by Id in tenanta schema
+            query = """
+            SELECT name, explanation
+            FROM tenanta.lessonsection
+            WHERE "Id" = %s
+            """
+            params = (int_id,)
+        else:
+            # Query by name (path) in tenanta schema
+            query = """
+            SELECT name, explanation
+            FROM tenanta.lessonsection
+            WHERE name = %s
+            """
+            params = (path_or_id,)
 
         if cls.conn is None:
             return None
 
         try:
             with cls.conn.cursor() as cur:
-
-                cur.execute(query, (path,))
+                cur.execute(query, params)
                 row = cur.fetchone()
 
                 if not row:
-                    return None
+                    # Fallback to public schema for legacy support if needed
+                    legacy_query = f"SELECT path, content FROM {cls.table_sections} WHERE path = %s"
+                    cur.execute(legacy_query, (path_or_id,))
+                    row = cur.fetchone()
+                    if not row:
+                        return None
 
                 return LessonSection(
                     path=row[0],
@@ -221,7 +244,9 @@ class MyLessonStore():
                 )
 
         except Exception as e:
-            print("Error reading section:", e)
+            print(f"Error reading section ({path_or_id}): {e}")
+            if cls.conn:
+                cls.conn.rollback()
             return None
 
     # ------------------------------------------------

@@ -34,11 +34,13 @@ export class QuizComponent implements OnInit {
         if (update.status === 'completed' && update.result) {
           try {
             const rawData = typeof update.result === 'string' ? JSON.parse(update.result) : update.result;
-            this.quizzes = rawData.map((q: any) => ({
-              ...q,
-              selectedAnswer: null,
-              answered: false,
-            }));
+            if (rawData && rawData.questions) {
+              this.quizzes = rawData.questions.map((q: any) => ({
+                ...q,
+                selectedAnswer: null,
+                answered: false,
+              }));
+            }
           } catch (e) {
             console.error('Failed to parse quiz result:', e);
           }

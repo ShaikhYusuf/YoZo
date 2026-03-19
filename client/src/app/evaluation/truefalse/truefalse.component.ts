@@ -35,11 +35,13 @@ export class TrueFalseComponent implements OnInit {
         if (update.status === 'completed' && update.result) {
           try {
             const rawData = typeof update.result === 'string' ? JSON.parse(update.result) : update.result;
-            this.trueFalseQuestions = rawData.map((q: any) => ({
-              ...q,
-              selectedAnswer: null,
-              answered: false,
-            }));
+            if (rawData && rawData.questions) {
+              this.trueFalseQuestions = rawData.questions.map((q: any) => ({
+                ...q,
+                selectedAnswer: null,
+                answered: false,
+              }));
+            }
           } catch (e) {
             console.error('Failed to parse true/false result:', e);
           }
